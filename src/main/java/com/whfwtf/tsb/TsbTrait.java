@@ -106,30 +106,29 @@ public enum TsbTrait {
 
     // ------------------------------------------------------------------ 命中
 
-    /** 刀身特性全额，刀柄 / 刀鞘各半：三件材料都参与，才不算白搭进去。 */
+    /** 刀身特性全额，副刃七成半，刀柄 / 刀鞘 / 副鞘各半：五件材料都参与，才不算白搭进去。 */
+    private static final float BLADE2_SCALE = 0.75F;
     private static final float HANDLE_SCALE = 0.5F;
     private static final float SAYA_SCALE = 0.5F;
+    private static final float SAYA2_SCALE = 0.5F;
 
     /**
-     * 命中后施加特性效果：刀身 100%、刀柄 50%、刀鞘 50%（三件可以是不同材料）。
+     * 命中后施加特性效果：主刃 100%、副刃 75%、刀柄 50%、刀鞘 50%、副鞘 50%。
+     *
+     * <p>打刀只有主刃 / 刀柄 / 刀鞘三个标签；无上大快刀五槽全标签，全部参与。
      *
      * @param damage 本次攻击已结算的伤害（用于百分比类特性）
      */
     public static void onHit(ItemStack stack, TsbBladeVariant variant, LivingEntity target,
                              LivingEntity attacker, float damage) {
-        String blade = TsbItems.materialOf(stack);
-        apply(stack, variant, blade, 1.0F, target, attacker, damage);
-
-        if (stack.hasTag()) {
-            String handle = stack.getTag().getString(TsbItems.TAG_HANDLE);
-            if (!handle.isEmpty()) {
-                apply(stack, variant, handle, HANDLE_SCALE, target, attacker, damage);
-            }
-            String saya = stack.getTag().getString(TsbItems.TAG_SAYA);
-            if (!saya.isEmpty()) {
-                apply(stack, variant, saya, SAYA_SCALE, target, attacker, damage);
-            }
+        if (!stack.hasTag()) {
+            return;
         }
+        apply(stack, variant, stack.getTag().getString(TsbItems.TAG_MATERIAL), 1.0F, target, attacker, damage);
+        apply(stack, variant, stack.getTag().getString(TsbItems.TAG_BLADE2), BLADE2_SCALE, target, attacker, damage);
+        apply(stack, variant, stack.getTag().getString(TsbItems.TAG_HANDLE), HANDLE_SCALE, target, attacker, damage);
+        apply(stack, variant, stack.getTag().getString(TsbItems.TAG_SAYA), SAYA_SCALE, target, attacker, damage);
+        apply(stack, variant, stack.getTag().getString(TsbItems.TAG_SAYA2), SAYA2_SCALE, target, attacker, damage);
     }
 
     private static void apply(ItemStack stack, TsbBladeVariant variant, String materialId, float partScale,

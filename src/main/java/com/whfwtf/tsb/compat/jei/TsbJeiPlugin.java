@@ -97,7 +97,8 @@ public class TsbJeiPlugin implements IModPlugin {
         TSB.LOGGER.info("[TSB-JEI] registerRecipeCatalysts 被调用");
         registration.addRecipeCatalysts(FORGING,
                 TsbItems.blank(TsbBladeVariant.UCHIGATANA),
-                TsbItems.blank(TsbBladeVariant.SHIRASAYA));
+                TsbItems.blank(TsbBladeVariant.SHIRASAYA),
+                TsbItems.blank(TsbBladeVariant.DAIKATANA));
         registration.addRecipeCatalysts(PART_CASTING,
                 TsbParts.cast(TsbPartType.BLADE),
                 TsbParts.cast(TsbPartType.HANDLE),

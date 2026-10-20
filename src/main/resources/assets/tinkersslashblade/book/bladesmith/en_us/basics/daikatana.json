@@ -1,0 +1,20 @@
+{
+  "title": "The Supreme Great Blade",
+  "text": [
+    {
+      "text": "The supreme great blade is the station's full form: one handle, two blades and two saya, all five parts on the bench and every number stacked."
+    },
+    {
+      "text": "Durability = (main blade + second blade) durability × handle durability × 1.2; attack = (main + second) attack × handle attack + half of each saya's attack × 2 + 1. All five parts may be different materials.",
+      "paragraph": true
+    },
+    {
+      "text": "Colour, slash art and repair material follow the main blade; the second blade's trait counts at 75%, the handle and both saya at 50% each.",
+      "paragraph": true
+    },
+    {
+      "text": "A great blade blank can be forged directly, but that is only a down payment: filling all five slots is the real thing.",
+      "paragraph": true
+    }
+  ]
+}

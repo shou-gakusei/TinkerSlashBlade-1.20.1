@@ -118,6 +118,23 @@ public class TsbBladeItem extends ItemSlashBlade {
         tooltip.add(Component.translatable("tsb.tooltip.material")
                 .append(TsbMaterials.coloredName(material)));
 
+        // 无上大快刀：把五槽材料逐行列出来（主刃就是上面那行「材料」）
+        if (TsbItems.variantOf(stack) == TsbBladeVariant.DAIKATANA) {
+            String[][] slots = {
+                    {TsbItems.TAG_BLADE2, "tsb.tooltip.blade2"},
+                    {TsbItems.TAG_HANDLE, "tsb.tooltip.handle"},
+                    {TsbItems.TAG_SAYA, "tsb.tooltip.saya"},
+                    {TsbItems.TAG_SAYA2, "tsb.tooltip.saya2"},
+            };
+            for (String[] slot : slots) {
+                String part = TsbItems.taggedMaterialOf(stack, slot[0]);
+                if (!part.isEmpty()) {
+                    tooltip.add(Component.translatable(slot[1], TsbMaterials.coloredName(part))
+                            .withStyle(ChatFormatting.GRAY));
+                }
+            }
+        }
+
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             tooltip.add(Component.translatable("tsb.tooltip.durability", state.getMaxDamage())
                     .withStyle(ChatFormatting.GRAY));

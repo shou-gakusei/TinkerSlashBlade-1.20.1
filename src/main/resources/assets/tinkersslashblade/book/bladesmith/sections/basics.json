@@ -28,5 +28,10 @@
     "name": "station_craft",
     "type": "mantle:crafting",
     "data": "basics/station_craft.json"
+  },
+  {
+    "name": "daikatana",
+    "type": "mantle:text",
+    "data": "basics/daikatana.json"
   }
 ]

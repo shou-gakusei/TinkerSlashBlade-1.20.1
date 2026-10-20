@@ -12,13 +12,16 @@ import javax.annotation.Nullable;
  *   <li>{@link #UCHIGATANA} 打刀：标准刀型，耐久与特性全额生效。</li>
  *   <li>{@link #SHIRASAYA} 白鞘：素刀，耐久打折、攻击略低、特性只有一半，但刀胚便宜，
  *       适合先用它试材料，再走拔刀剑本体的「妖刀化」路线。</li>
+ *   <li>{@link #DAIKATANA} 无上大快刀：大快刀型，只在装配台用 5 个部件拼出来
+ *       （刀柄×1 + 刀刃×2 + 刀鞘×2），五槽数值全部硬堆；刀胚路线只算廉价预支。</li>
  * </ul>
  */
 public enum TsbBladeVariant {
 
     UCHIGATANA("tsb_blade", "tsb_blade_blank", 1.0F, 0.0F, null),
     SHIRASAYA("tsb_blade_white", "tsb_blade_blank_white", 0.6F, -1.0F,
-            ResourceLocation.tryParse("slashblade:model/white.png"));
+            ResourceLocation.tryParse("slashblade:model/white.png")),
+    DAIKATANA("tsb_blade_daikatana", "tsb_blade_blank_daikatana", 1.2F, 1.0F, null);
 
     private final String itemPath;
     private final String blankPath;

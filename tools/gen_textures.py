@@ -61,12 +61,34 @@ def white_blank():
     return im
 
 
+def daikatana_blank():
+    """大快刀胚：更长更厚的一柄素刀，刃口占满整条对角线。"""
+    im = canvas()
+    d = ImageDraw.Draw(im)
+    # 加长的刀茎（会被握柄包住的部分）
+    d.line([(0, 15), (4, 11)], fill=WOOD, width=2)
+    d.point((0, 14), fill=WOOD_HI)
+    # 刀身主对角线：比普通刀胚粗一圈（宽 4），从茎尖拉到右上角
+    d.line([(3, 12), (14, 1)], fill=STEEL, width=4)
+    # 刃口高光 + 刀背暗部
+    d.line([(3, 13), (14, 2)], fill=STEEL_HI, width=1)
+    d.line([(3, 14), (14, 3)], fill=STEEL_DK, width=1)
+    d.line([(4, 11), (14, 1)], fill=STEEL_DK, width=1)
+    # 切先
+    d.point((15, 0), fill=STEEL_HI)
+    d.point((14, 0), fill=STEEL)
+    d.point((15, 1), fill=STEEL_DK)
+    return im
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     blade_blank().save(OUT / "tsb_blade_blank.png")
     white_blank().save(OUT / "tsb_blade_blank_white.png")
+    daikatana_blank().save(OUT / "tsb_blade_blank_daikatana.png")
     print("生成", OUT / "tsb_blade_blank.png")
     print("生成", OUT / "tsb_blade_blank_white.png")
+    print("生成", OUT / "tsb_blade_blank_daikatana.png")
 
 
 if __name__ == "__main__":

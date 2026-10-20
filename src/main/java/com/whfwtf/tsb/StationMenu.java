@@ -8,8 +8,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** 装配台界面：刀身 / 刀柄 / 刀鞘 三槽 + 产物槽。 */
+/** 装配台界面：左列（刀身 / 刀柄 / 刀鞘）= 打刀老三槽；右列（副刃 / 副鞘）补满即无上大快刀。 */
 public class StationMenu extends AbstractContainerMenu {
+
+    /** 输入槽在界面里的坐标（下标与 {@link StationBlockEntity#SLOT_TYPES} 对应）。 */
+    private static final int[][] SLOT_POS = {
+            {26, 20}, {44, 20}, {26, 40}, {26, 60}, {44, 60}
+    };
 
     private final StationBlockEntity entity;
 
@@ -21,9 +26,10 @@ public class StationMenu extends AbstractContainerMenu {
         super(TsbMenus.BLADE_STATION.get(), id);
         this.entity = entity;
 
-        for (int i = 0; i < 3; i++) {
-            TsbPartType type = TsbPartType.values()[i];
-            addSlot(new Slot(entity, i, 26, 20 + i * 20) {
+        for (int i = 0; i < SLOT_POS.length; i++) {
+            TsbPartType type = StationBlockEntity.SLOT_TYPES[i];
+            int[] pos = SLOT_POS[i];
+            addSlot(new Slot(entity, i, pos[0], pos[1]) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
                     return TsbParts.isPart(stack, type);

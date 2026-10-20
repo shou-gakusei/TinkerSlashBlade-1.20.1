@@ -155,7 +155,7 @@ public final class TsbAssembly {
 
         int durability = Math.max(2,
                 Math.round(blade.durability() * variant.durabilityFactor() * durabilityFactor));
-        float attack = Math.max(1.0F, blade.attack() * attackFactor + sayaBonus);
+        float attack = Math.max(1.0F, blade.attack() * attackFactor + sayaBonus + variant.attackOffset());
 
         ItemStack out = new ItemStack(TsbItems.blade(variant));
         var tag = out.getOrCreateTag();
@@ -163,6 +163,70 @@ public final class TsbAssembly {
         tag.putString(TsbItems.TAG_VARIANT, variant.name());
         tag.putString(TsbItems.TAG_HANDLE, handleMat);
         tag.putString(TsbItems.TAG_SAYA, sayaMat);
+
+        out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
+            state.setNonEmpty();
+            state.setMaxDamage(durability);
+            state.setDamage(0);
+            state.setBaseAttackModifier(attack);
+            state.setColorCode(blade.color());
+            state.setSlashArtsKey(TsbArts.forMaterial(blade));
+            var texture = bladeTexture(bladeMat);
+            if (texture != null) {
+                state.setTexture(texture);
+            }
+        });
+        out.setHoverName(named(variant, bladeMat));
+        return out;
+    }
+
+    /**
+     * 无上大快刀：刀柄×1 + 刀刃×2 + 刀鞘×2 → 刀，五槽数值全部硬堆。
+     *
+     * <p>耐久 =（主刃 + 副刃）耐久 × 刀柄耐久倍率 × 大快刀系数（1.2）；
+     * 攻击 =（主刃 + 副刃）攻击 × 刀柄攻击倍率 +（刀鞘 + 副鞘）攻击 × 0.5 + 大快刀修正（+1.0）。
+     * 五件可以是五种不同材料；刃色 / 刀技 / 贴图 / 修复材料看主刃，
+     * 副刃与两把刀鞘的刀性按折扣在 {@link TsbTrait#onHit} 里额外生效。
+     */
+    public static ItemStack assembleDaikatana(ItemStack bladePart, ItemStack blade2Part,
+                                              ItemStack handlePart, ItemStack sayaPart,
+                                              ItemStack saya2Part) {
+        String bladeMat = TsbParts.materialOf(bladePart);
+        String blade2Mat = TsbParts.materialOf(blade2Part);
+        String handleMat = TsbParts.materialOf(handlePart);
+        String sayaMat = TsbParts.materialOf(sayaPart);
+        String saya2Mat = TsbParts.materialOf(saya2Part);
+        TsbMaterial.Entry blade = TsbMaterials.resolve(bladeMat);
+        TsbMaterial.Entry blade2 = TsbMaterials.resolve(blade2Mat);
+        TsbMaterial.Entry handle = TsbMaterials.resolve(handleMat);
+        TsbMaterial.Entry saya = TsbMaterials.resolve(sayaMat);
+        TsbMaterial.Entry saya2 = TsbMaterials.resolve(saya2Mat);
+        if (blade == null || blade2 == null || handle == null || saya == null || saya2 == null) {
+            return ItemStack.EMPTY;
+        }
+
+        TsbBladeVariant variant = TsbBladeVariant.DAIKATANA;
+
+        // 刀柄：匠魂真实的耐久 / 攻击倍率（HandleMaterialStats）
+        float durabilityFactor = TsbMaterials.handleDurability(handleMat);
+        float attackFactor = TsbMaterials.handleAttack(handleMat);
+        // 两把刀鞘都是配重 / 研磨，各按自己刀身攻击的一半折算
+        float sayaBonus = (saya.attack() + saya2.attack()) * 0.5F;
+
+        int durability = Math.max(2,
+                Math.round((blade.durability() + blade2.durability())
+                        * variant.durabilityFactor() * durabilityFactor));
+        float attack = Math.max(1.0F,
+                (blade.attack() + blade2.attack()) * attackFactor + sayaBonus + variant.attackOffset());
+
+        ItemStack out = new ItemStack(TsbItems.blade(variant));
+        var tag = out.getOrCreateTag();
+        tag.putString(TsbItems.TAG_MATERIAL, bladeMat);
+        tag.putString(TsbItems.TAG_VARIANT, variant.name());
+        tag.putString(TsbItems.TAG_BLADE2, blade2Mat);
+        tag.putString(TsbItems.TAG_HANDLE, handleMat);
+        tag.putString(TsbItems.TAG_SAYA, sayaMat);
+        tag.putString(TsbItems.TAG_SAYA2, saya2Mat);
 
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();

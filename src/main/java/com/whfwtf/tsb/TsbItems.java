@@ -36,6 +36,10 @@ public final class TsbItems {
     public static final String TAG_HANDLE = "tsb_handle";
     /** 装配出来的刀：刀鞘材料。 */
     public static final String TAG_SAYA = "tsb_saya";
+    /** 无上大快刀：副刀刃材料（第二把刀身）。 */
+    public static final String TAG_BLADE2 = "tsb_blade2";
+    /** 无上大快刀：副刀鞘材料（第二段配重）。 */
+    public static final String TAG_SAYA2 = "tsb_saya2";
 
     /** 《刀匠标准手册》。 */
     public static final RegistryObject<Item> GUIDE =
@@ -99,6 +103,14 @@ public final class TsbItems {
             return "";
         }
         return stack.getOrCreateTag().getString(TAG_MATERIAL);
+    }
+
+    /** 读物品上某个 NBT 键记录的材料名（无上大快刀的副刃 / 副鞘等）。 */
+    public static String taggedMaterialOf(ItemStack stack, String key) {
+        if (stack.isEmpty() || !stack.hasTag()) {
+            return "";
+        }
+        return stack.getOrCreateTag().getString(key);
     }
 
     /** 由创造模式标签页调用（仅当拔刀剑存在时）。 */
