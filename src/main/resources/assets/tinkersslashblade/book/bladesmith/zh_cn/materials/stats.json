@@ -1,0 +1,20 @@
+{
+  "title": "材料的数值",
+  "text": [
+    {
+      "text": "三十七种 TAIGA 材料各有各的刀身数值，从一百耐久的玄武岩，到九百五十耐久、十点攻击的虚无石。"
+    },
+    {
+      "text": "在 JEI 里看任意刀胚，就能翻到「刀匠锻造」的全部条目，每条都标着耐久、攻击和材料阶级。",
+      "paragraph": true
+    },
+    {
+      "text": "手里的刀也会把材料、耐久、攻击写在提示里。",
+      "paragraph": true
+    },
+    {
+      "text": "想调整数值？改 TAIGA 的材料数据，再重跑 tools/gen_tsb_materials.py。",
+      "paragraph": true
+    }
+  ]
+}

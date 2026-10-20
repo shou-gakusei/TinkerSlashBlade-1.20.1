@@ -1,0 +1,20 @@
+{
+  "title": "Forging",
+  "text": [
+    {
+      "text": "Put one blade blank and one to three ingots of the same Tinkers' material into a crafting table to forge a SlashBlade."
+    },
+    {
+      "text": "Every stat comes from the material's head stats: durability is the material's durability times the blade type factor, attack is the material's attack plus a blade type modifier.",
+      "paragraph": true
+    },
+    {
+      "text": "Extra ingots only add durability, ten percent each. They never change the trait.",
+      "paragraph": true
+    },
+    {
+      "text": "Different blanks make different blades: a blade blank makes an uchigatana, a shirasaya blank makes a shirasaya.",
+      "paragraph": true
+    }
+  ]
+}

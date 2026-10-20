@@ -1,0 +1,30 @@
+[
+  {
+    "name": "basics",
+    "data": "sections/basics.json",
+    "icon": {
+      "item": "tinkersslashblade:tsb_blade_blank"
+    }
+  },
+  {
+    "name": "materials",
+    "data": "sections/materials.json",
+    "icon": {
+      "item": "tinkersslashblade:tsb_blade"
+    }
+  },
+  {
+    "name": "traits",
+    "data": "sections/traits.json",
+    "icon": {
+      "item": "taiga:ignitz_ingot"
+    }
+  },
+  {
+    "name": "finishing",
+    "data": "sections/finishing.json",
+    "icon": {
+      "item": "tinkersslashblade:tsb_blade_white"
+    }
+  }
+]

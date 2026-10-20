@@ -1,0 +1,16 @@
+{
+  "type": "tconstruct:part_builder",
+  "pattern": "tinkersslashblade:tsb_part_handle",
+  "pattern_item": [
+    {
+      "tag": "tconstruct:patterns/default"
+    },
+    {
+      "item": "tinkersslashblade:tsb_part_handle_cast"
+    }
+  ],
+  "cost": 1,
+  "result": {
+    "item": "tinkersslashblade:tsb_part_handle"
+  }
+}

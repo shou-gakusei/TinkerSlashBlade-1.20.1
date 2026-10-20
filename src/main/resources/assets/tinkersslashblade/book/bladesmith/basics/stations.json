@@ -1,0 +1,28 @@
+{
+  "title": "Forge & Station",
+  "text": [
+    {
+      "text": "Two roads lead to the same blade: the forge is quick, the station is precise."
+    },
+    {
+      "text": "Forge: put a blade blank on the left and one to three ingots of the same material on the right. Extra ingots only add durability, ten percent each.",
+      "paragraph": true
+    },
+    {
+      "text": "Station: one blade part, one handle part and one saya part, each of a different material if you like. The blade sets durability, attack and trait; the handle scales durability by tier; the saya shifts attack by tier.",
+      "paragraph": true
+    },
+    {
+      "text": "Parts come from Tinkers' own stations: pour molten metal into a gold cast on the casting table, or hammer a non-castable material with the cast in the part builder.",
+      "paragraph": true
+    },
+    {
+      "text": "Make a cast from gold ingots and a Tinkers' pattern in a crafting table; one cast lasts forever. The blade takes two materials, the handle and saya one each.",
+      "paragraph": true
+    },
+    {
+      "text": "Both stations can be picked up; their contents spill out.",
+      "paragraph": true
+    }
+  ]
+}

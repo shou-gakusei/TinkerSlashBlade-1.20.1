@@ -1,0 +1,11 @@
+{
+  "coverTexture": "tinkersslashblade:book/images/cover.png",
+  "bookTexture": "tinkersslashblade:book/images/pages.png",
+  "coverColor": -1,
+  "arrowColor": -1,
+  "slotColor": 15058562,
+  "drawSectionListText": true,
+  "largePageTitles": false,
+  "centerPageTitles": true,
+  "uniformFont": true
+}

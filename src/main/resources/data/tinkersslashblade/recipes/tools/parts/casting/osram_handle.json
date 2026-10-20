@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+  "cast": {
+    "item": "tinkersslashblade:tsb_part_handle_cast"
+  },
+  "fluid": {
+    "fluid": "taiga:molten_osram",
+    "amount": 90
+  },
+  "cooling_time": 40,
+  "result": {
+    "item": "tinkersslashblade:tsb_part_handle",
+    "nbt": {
+      "material": "taiga:osram"
+    }
+  }
+}

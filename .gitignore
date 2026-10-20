@@ -1,0 +1,33 @@
+# Gradle
+.gradle/
+build/
+
+# dev 运行目录（世界、日志、配置都不入库）
+run/
+run-data/
+logs/
+crash-reports/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+out/
+
+# 本地依赖 / 临时产物
+libs/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.bak
+*-log.txt
+compile.log
+
+# 系统
+.DS_Store
+Thumbs.db

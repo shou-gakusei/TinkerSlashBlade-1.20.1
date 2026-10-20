@@ -1,0 +1,8 @@
+{
+  "type": "tconstruct:table_casting_material",
+  "cast": {
+    "tag": "tinkersslashblade:casts/multi_use/blade"
+  },
+  "item_cost": 2,
+  "result": "tinkersslashblade:tsb_part_blade"
+}

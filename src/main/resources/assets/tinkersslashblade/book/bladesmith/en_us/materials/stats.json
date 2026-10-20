@@ -1,0 +1,20 @@
+{
+  "title": "Material Stats",
+  "text": [
+    {
+      "text": "The thirty-seven TAIGA materials range from 100 durability basalt to nihilite with 950 durability and 10 attack."
+    },
+    {
+      "text": "Look up any blade blank in JEI to browse every Blade Forging entry, each labelled with durability, attack and material tier.",
+      "paragraph": true
+    },
+    {
+      "text": "A finished blade lists its material, durability and attack in its tooltip.",
+      "paragraph": true
+    },
+    {
+      "text": "To retune the numbers, edit the TAIGA material data and rerun tools/gen_tsb_materials.py.",
+      "paragraph": true
+    }
+  ]
+}

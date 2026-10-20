@@ -1,0 +1,7 @@
+[
+  {
+    "name": "stats",
+    "type": "mantle:text",
+    "data": "materials/stats.json"
+  }
+]

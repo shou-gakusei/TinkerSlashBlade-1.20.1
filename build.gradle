@@ -1,0 +1,115 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '6.0.+'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = 'tinkersslashblade'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+            args '--nogui'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+    // 本地依赖：与 taiga3 共用同一份 libs（第三方 mod jar 不入库）
+    flatDir { dir project.findProperty('localLibs') ?: '../taiga3/libs' }
+    // taiga3 自己的构建产物（reobf 过的 jar，需要 fg.deobf 才能进 dev）
+    flatDir { dir '../taiga3/build/libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // 编译/运行依赖（本地预编译 jar）
+    // 拔刀剑：刀本体就是它的 ItemSlashBlade，编译与运行都要
+    implementation fg.deobf("local:SlashBladeResharped-1.20.1:1.9.65")
+    // 匠魂：只有特性/材料的数据侧引用，但 dev 运行环境要能加载（材料锭来自 TAIGA）
+    implementation fg.deobf("local:TConstruct:1.20.1-3.10.2.92")
+    implementation fg.deobf("local:Mantle:1.20.1-1.11.79")
+    // TAIGA（本 mod 的数值表来自 TAIGA 的材料，运行时必须存在）
+    // 注意：taiga3 的 build/libs 产物是 reobf（SRG 名）的，dev 运行时是 official 名，
+    // 直接用 files(...) 加进去会 NoSuchFieldError: f_xxxxx_；走 flatDir 坐标让 fg.deobf 正常重映射。
+    compileOnly fg.deobf("local:taiga3:1.20.1-1.3.3")
+    runtimeOnly fg.deobf("local:taiga3:1.20.1-1.3.3")
+    // TAIGA 的硬依赖：挖掘等级扩展（只在 taiga3 的 run/mods 里有，dev 运行必须带上，否则 TAIGA 拒绝启动）
+    runtimeOnly files('../taiga3/run/mods/moreharvestinglevel-0.0.3.jar')
+    // JEI：只在编译期与 dev 运行期需要，正式环境是可选联动（mods.toml 里声明 optional）
+    compileOnly fg.deobf("local:jei-1.20.1-forge:15.21.0.148")
+    runtimeOnly fg.deobf("local:jei-1.20.1-forge:15.21.0.148")
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+        ])
+    }
+    finalizedBy 'reobfJar'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}

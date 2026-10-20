@@ -1,0 +1,32 @@
+[
+  {
+    "name": "forging",
+    "type": "mantle:text",
+    "data": "basics/forging.json"
+  },
+  {
+    "name": "blank",
+    "type": "mantle:crafting",
+    "data": "basics/blank.json"
+  },
+  {
+    "name": "shirasaya_blank",
+    "type": "mantle:crafting",
+    "data": "basics/shirasaya_blank.json"
+  },
+  {
+    "name": "stations",
+    "type": "mantle:text",
+    "data": "basics/stations.json"
+  },
+  {
+    "name": "forge_craft",
+    "type": "mantle:crafting",
+    "data": "basics/forge_craft.json"
+  },
+  {
+    "name": "station_craft",
+    "type": "mantle:crafting",
+    "data": "basics/station_craft.json"
+  }
+]

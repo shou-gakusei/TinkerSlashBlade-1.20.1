@@ -1,0 +1,7 @@
+[
+  {
+    "name": "traits",
+    "type": "mantle:text",
+    "data": "traits/traits.json"
+  }
+]

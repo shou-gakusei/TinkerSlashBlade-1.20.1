@@ -1,0 +1,12 @@
+{
+  "title": "Maintenance",
+  "text": [
+    {
+      "text": "A SlashBlade keeps its durability in its own blade state, not in the item damage tag, so an anvil will not help."
+    },
+    {
+      "text": "Craft the blade together with ingots of its own material: each ingot restores a quarter of the maximum durability. Blades with the Ductile trait also repair themselves over time.",
+      "paragraph": true
+    }
+  ]
+}

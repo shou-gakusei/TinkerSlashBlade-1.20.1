@@ -1,0 +1,20 @@
+{
+  "title": "Blade Traits",
+  "text": [
+    {
+      "text": "Tinkers' traits only work on Tinkers' tools, and a SlashBlade is not one. So this mod reimplements each trait as a melee effect: a blade behaves like the axe made from the same material."
+    },
+    {
+      "text": "Searing sets targets on fire, Jagged adds damage on every hit, Heavy knocks targets back and slows them, Lightweight swings faster, Pierce ignores part of the armor.",
+      "paragraph": true
+    },
+    {
+      "text": "Soul Eater absorbs extra proud souls on kill, Berserker hits harder below half health, and Unstable rolls a random effect on each hit.",
+      "paragraph": true
+    },
+    {
+      "text": "Some traits have nothing to do with swinging (Tanned, Cultivated, Fortune, Dwarven, Crumbling) and are only shown for reference.",
+      "paragraph": true
+    }
+  ]
+}

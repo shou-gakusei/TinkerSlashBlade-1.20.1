@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "ISI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "tinkersslashblade:tsb_blade_blank"
+    }
+  },
+  "result": {
+    "item": "tinkersslashblade:blade_forge"
+  }
+}

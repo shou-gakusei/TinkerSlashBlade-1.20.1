@@ -1,0 +1,64 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL=""
+
+[[mods]]
+modId="tinkersslashblade"
+version="1.20.1-0.5.4"
+displayName="Tinker's SlashBlade"
+authors="whfwtf"
+description='''
+用匠魂的材料体系锻造拔刀剑（1.12.2 刀锻冶匠魂的 1.20.1 移植）。
+'''
+
+[[dependencies.tinkersslashblade]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.tinkersslashblade]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.tinkersslashblade]]
+    modId="slashblade"
+    mandatory=true
+    versionRange="[1.9.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.tinkersslashblade]]
+    modId="taiga"
+    mandatory=true
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.tinkersslashblade]]
+    modId="tconstruct"
+    mandatory=false
+    versionRange="[3.10.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+# 可选：装了 JEI 会显示「刀匠锻造」配方分类
+[[dependencies.tinkersslashblade]]
+    modId="jei"
+    mandatory=false
+    versionRange="[15,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+# 可选：刀匠标准手册基于 Mantle 的书系统（TAIGA 已经依赖 Mantle，一般不缺）
+[[dependencies.tinkersslashblade]]
+    modId="mantle"
+    mandatory=false
+    versionRange="[1.11,)"
+    ordering="AFTER"
+    side="BOTH"

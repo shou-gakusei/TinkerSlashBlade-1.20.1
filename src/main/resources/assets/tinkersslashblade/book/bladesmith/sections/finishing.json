@@ -1,0 +1,17 @@
+[
+  {
+    "name": "polish",
+    "type": "mantle:text",
+    "data": "finishing/polish.json"
+  },
+  {
+    "name": "arts",
+    "type": "mantle:text",
+    "data": "finishing/arts.json"
+  },
+  {
+    "name": "repair",
+    "type": "mantle:text",
+    "data": "finishing/repair.json"
+  }
+]
