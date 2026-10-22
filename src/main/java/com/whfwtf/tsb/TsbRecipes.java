@@ -32,5 +32,9 @@ public final class TsbRecipes {
     public static final RegistryObject<RecipeSerializer<TsbReinforceRecipe>> REINFORCE =
             SERIALIZERS.register("tsb_reinforce", () -> TsbReinforceRecipe.Serializer.INSTANCE);
 
+    /** 工匠砧材料修复：刀 + 六槽任一材料锭 → 修复耐久（JSON: {@code {"type":"tinkersslashblade:tsb_anvil_repair"}}）。 */
+    public static final RegistryObject<RecipeSerializer<TsbAnvilRepairRecipe>> ANVIL_REPAIR =
+            SERIALIZERS.register("tsb_anvil_repair", () -> TsbAnvilRepairRecipe.Serializer.INSTANCE);
+
     private TsbRecipes() {}
 }

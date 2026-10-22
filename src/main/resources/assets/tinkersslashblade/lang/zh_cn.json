@@ -110,5 +110,10 @@
   "tsb.tooltip.rank.0": "B",
   "tsb.tooltip.rank.1": "SS",
   "tsb.tooltip.rank.2": "SSS",
-  "tsb.tooltip.rank.3": "Limit"
+  "tsb.tooltip.rank.3": "Limit",
+  "tsb.tooltip.refine": "强化（Refine）：%s",
+  "tsb.tooltip.refine.desc": "工匠砧用强化卷轴可免费提升，不吃强化槽位",
+  "tsb.anvil_repair.no_material": "这把刀没有可修复的材料记录",
+  "tsb.anvil_repair.no_ingot": "需要对应材料的锭",
+  "tsb.anvil_repair.already_full": "刀的耐久已满，无需修理"
 }

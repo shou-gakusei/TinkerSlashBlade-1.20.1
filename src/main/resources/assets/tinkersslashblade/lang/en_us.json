@@ -110,5 +110,10 @@
   "tsb.tooltip.rank.0": "B",
   "tsb.tooltip.rank.1": "SS",
   "tsb.tooltip.rank.2": "SSS",
-  "tsb.tooltip.rank.3": "Limit"
+  "tsb.tooltip.rank.3": "Limit",
+  "tsb.tooltip.refine": "Refine: %s",
+  "tsb.tooltip.refine.desc": "Use a reinforce scroll in the anvil to raise it for free, no modifier slots used",
+  "tsb.anvil_repair.no_material": "This blade has no repairable material recorded",
+  "tsb.anvil_repair.no_ingot": "Requires an ingot of the matching material",
+  "tsb.anvil_repair.already_full": "The blade is already at full durability"
 }
