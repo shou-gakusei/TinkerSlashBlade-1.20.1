@@ -13,7 +13,7 @@
       "paragraph": true
     },
     {
-      "text": "Station: one blade part, one handle part and one saya part, each of a different material if you like. The blade sets durability, attack and trait; the handle scales durability by tier; the saya shifts attack by tier.",
+      "text": "Station: one blade part, one handle part and one saya part, each of a different material if you like. The blade sets durability, attack, mining and trait; the handle scales durability, attack, attack speed and mining speed by Tinkers' percentage modifiers; the saya adds two tenths of its own blade attack.",
       "paragraph": true
     },
     {
@@ -29,7 +29,7 @@
       "paragraph": true
     },
     {
-      "text": "Fill the right column as well - a second blade and a second saya - and all five slots forge the supreme great blade, where every number stacks: the full form of this mod.",
+      "text": "Fill the right column as well - a second blade, handle and saya - and all six slots forge the supreme great blade, where every number stacks: the full form of this mod.",
       "paragraph": true
     }
   ]

@@ -15,6 +15,9 @@ import javax.annotation.Nullable;
  */
 public final class TsbAssembly {
 
+    /** 拔刀剑的基础攻击速度（ItemSlashBlade 构造参数的 -2.4 修正，即 4.0 - 2.4）。 */
+    public static final float BASE_ATTACK_SPEED = 1.6F;
+
     private TsbAssembly() {}
 
     /** 打刀 / 白鞘的耐久与攻击折算，外加材料锭数量的耐久加成。 */
@@ -43,6 +46,7 @@ public final class TsbAssembly {
         tag.putString(TsbItems.TAG_MATERIAL, material);
         tag.putString(TsbItems.TAG_VARIANT, variant.name());
         tag.putInt("tsb_ingots", ingots);
+        putStats(tag, entry.miningSpeed(), entry.miningTier(), 1.0F);
 
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
@@ -84,6 +88,7 @@ public final class TsbAssembly {
         tag.putString(TsbItems.TAG_MATERIAL, material);
         tag.putString(TsbItems.TAG_VARIANT, target.name());
         tag.putInt("tsb_ingots", ingots);
+        putStats(tag, entry.miningSpeed(), entry.miningTier(), 1.0F);
         out.setHoverName(named(target, material));
 
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
@@ -126,10 +131,11 @@ public final class TsbAssembly {
     // ------------------------------------------------------------------ 装配
 
     /**
-     * 刀身 + 刀柄 + 刀鞘 → 刀。
+     * 打刀：刀身 + 刀柄 + 刀鞘 → 刀（老三槽配方）。
      *
-     * <p>刀身决定基础耐久与攻击、以及刀性；刀柄按阶级给耐久加成（0.85~1.15）；
-     * 刀鞘按阶级给攻击修正（−0.5~+1.5）。三件可以是不同材料。
+     * <p>刀身决定基础耐久、攻击、挖掘速度与刀性；刀柄按匠魂的百分比修饰符修正
+     * 耐久 / 攻击 / 攻速 / 挖掘速度（0.85~1.15 量级，见 {@link TsbMaterials}）；
+     * 刀鞘按它自己刀身攻击的两成折算攻击加成（配重 / 研磨）。三件可以是不同材料。
      */
     public static ItemStack assemble(ItemStack bladePart, ItemStack handlePart, ItemStack sayaPart) {
         String bladeMat = TsbParts.materialOf(bladePart);
@@ -147,15 +153,18 @@ public final class TsbAssembly {
 
         TsbBladeVariant variant = TsbBladeVariant.UCHIGATANA;
 
-        // 刀柄：匠魂真实的耐久 / 攻击倍率（HandleMaterialStats）
-        float durabilityFactor = TsbMaterials.handleDurability(handleMat);
-        float attackFactor = TsbMaterials.handleAttack(handleMat);
-        // 刀鞘：按它自己刀身属性的两成折算攻击，算是「配重 / 研磨」的加成
+        // 刀柄：匠魂的百分比修饰符（耐久 / 攻击 / 攻速 / 挖掘速度）
+        float durabilityFactor = 1.0F + TsbMaterials.handleDurability(handleMat);
+        float attackFactor = 1.0F + TsbMaterials.handleAttack(handleMat);
+        float speedFactor = 1.0F + TsbMaterials.handleMeleeSpeed(handleMat);
+        float miningFactor = 1.0F + TsbMaterials.handleMiningSpeed(handleMat);
+        // 刀鞘：按它自己刀身攻击的两成折算攻击，算是「配重 / 研磨」的加成
         float sayaBonus = saya.attack() * 0.2F;
 
         int durability = Math.max(2,
                 Math.round(blade.durability() * variant.durabilityFactor() * durabilityFactor));
         float attack = Math.max(1.0F, blade.attack() * attackFactor + sayaBonus + variant.attackOffset());
+        float miningSpeed = Math.max(0.0F, blade.miningSpeed() * miningFactor);
 
         ItemStack out = new ItemStack(TsbItems.blade(variant));
         var tag = out.getOrCreateTag();
@@ -163,6 +172,7 @@ public final class TsbAssembly {
         tag.putString(TsbItems.TAG_VARIANT, variant.name());
         tag.putString(TsbItems.TAG_HANDLE, handleMat);
         tag.putString(TsbItems.TAG_SAYA, sayaMat);
+        putStats(tag, miningSpeed, blade.miningTier(), speedFactor);
 
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
@@ -181,43 +191,67 @@ public final class TsbAssembly {
     }
 
     /**
-     * 无上大快刀：刀柄×1 + 刀刃×2 + 刀鞘×2 → 刀，五槽数值全部硬堆。
+     * 无上大快刀：刀柄×2 + 刀刃×2 + 刀鞘×2 → 刀，六槽数值全部硬堆（配合游戏进度的完全体）。
      *
-     * <p>耐久 =（主刃 + 副刃）耐久 × 刀柄耐久倍率 × 大快刀系数（1.2）；
-     * 攻击 =（主刃 + 副刃）攻击 × 刀柄攻击倍率 +（刀鞘 + 副鞘）攻击 × 0.5 + 大快刀修正（+1.0）。
-     * 五件可以是五种不同材料；刃色 / 刀技 / 贴图 / 修复材料看主刃，
+     * <p>三组部件各自单独加算：
+     * <ul>
+     *   <li><b>双刀柄</b>：两根刀柄的匠魂百分比修饰符（耐久 / 攻击 / 攻速 / 挖掘速度）直接相加，
+     *       倍率 = 1 + 主柄 + 副柄；</li>
+     *   <li><b>双刀身</b>：两把刀身的近战伤害、挖掘速度、耐久各自相加；</li>
+     *   <li><b>双刀鞘</b>：两把刀鞘的近战伤害、挖掘速度、耐久各自相加。</li>
+     * </ul>
+     * 耐久 =（两刃 + 两鞘）耐久 × 大快刀系数（1.2）× 刀柄耐久倍率；
+     * 攻击 =（两刃 + 两鞘）攻击 × 刀柄攻击倍率 + 大快刀修正（+1.0）；
+     * 挖掘速度 =（两刃 + 两鞘）挖掘速度 × 刀柄挖掘倍率；挖掘等级取六件里最高的一件。
+     *
+     * <p>六件可以是六种不同材料；刃色 / 刀技 / 贴图 / 修复材料看主刃，
      * 副刃与两把刀鞘的刀性按折扣在 {@link TsbTrait#onHit} 里额外生效。
      */
     public static ItemStack assembleDaikatana(ItemStack bladePart, ItemStack blade2Part,
-                                              ItemStack handlePart, ItemStack sayaPart,
-                                              ItemStack saya2Part) {
+                                              ItemStack handlePart, ItemStack handle2Part,
+                                              ItemStack sayaPart, ItemStack saya2Part) {
         String bladeMat = TsbParts.materialOf(bladePart);
         String blade2Mat = TsbParts.materialOf(blade2Part);
         String handleMat = TsbParts.materialOf(handlePart);
+        String handle2Mat = TsbParts.materialOf(handle2Part);
         String sayaMat = TsbParts.materialOf(sayaPart);
         String saya2Mat = TsbParts.materialOf(saya2Part);
         TsbMaterial.Entry blade = TsbMaterials.resolve(bladeMat);
         TsbMaterial.Entry blade2 = TsbMaterials.resolve(blade2Mat);
         TsbMaterial.Entry handle = TsbMaterials.resolve(handleMat);
+        TsbMaterial.Entry handle2 = TsbMaterials.resolve(handle2Mat);
         TsbMaterial.Entry saya = TsbMaterials.resolve(sayaMat);
         TsbMaterial.Entry saya2 = TsbMaterials.resolve(saya2Mat);
-        if (blade == null || blade2 == null || handle == null || saya == null || saya2 == null) {
+        if (blade == null || blade2 == null || handle == null || handle2 == null
+                || saya == null || saya2 == null) {
             return ItemStack.EMPTY;
         }
 
         TsbBladeVariant variant = TsbBladeVariant.DAIKATANA;
 
-        // 刀柄：匠魂真实的耐久 / 攻击倍率（HandleMaterialStats）
-        float durabilityFactor = TsbMaterials.handleDurability(handleMat);
-        float attackFactor = TsbMaterials.handleAttack(handleMat);
-        // 两把刀鞘都是配重 / 研磨，各按自己刀身攻击的一半折算
-        float sayaBonus = (saya.attack() + saya2.attack()) * 0.5F;
+        // 双刀柄：百分比修饰符单独加算（倍率 = 1 + 主柄 + 副柄）
+        float durabilityFactor = 1.0F + TsbMaterials.handleDurability(handleMat)
+                + TsbMaterials.handleDurability(handle2Mat);
+        float attackFactor = 1.0F + TsbMaterials.handleAttack(handleMat)
+                + TsbMaterials.handleAttack(handle2Mat);
+        float speedFactor = 1.0F + TsbMaterials.handleMeleeSpeed(handleMat)
+                + TsbMaterials.handleMeleeSpeed(handle2Mat);
+        float miningFactor = 1.0F + TsbMaterials.handleMiningSpeed(handleMat)
+                + TsbMaterials.handleMiningSpeed(handle2Mat);
+
+        // 双刀身 + 双刀鞘：近战伤害 / 挖掘速度 / 耐久各自单独加算
+        float durabilitySum = blade.durability() + blade2.durability()
+                + saya.durability() + saya2.durability();
+        float attackSum = blade.attack() + blade2.attack() + saya.attack() + saya2.attack();
+        float miningSum = blade.miningSpeed() + blade2.miningSpeed()
+                + saya.miningSpeed() + saya2.miningSpeed();
+        int miningTier = Math.max(Math.max(blade.miningTier(), blade2.miningTier()),
+                Math.max(saya.miningTier(), saya2.miningTier()));
 
         int durability = Math.max(2,
-                Math.round((blade.durability() + blade2.durability())
-                        * variant.durabilityFactor() * durabilityFactor));
-        float attack = Math.max(1.0F,
-                (blade.attack() + blade2.attack()) * attackFactor + sayaBonus + variant.attackOffset());
+                Math.round(durabilitySum * variant.durabilityFactor() * durabilityFactor));
+        float attack = Math.max(1.0F, attackSum * attackFactor + variant.attackOffset());
+        float miningSpeed = Math.max(0.0F, miningSum * miningFactor);
 
         ItemStack out = new ItemStack(TsbItems.blade(variant));
         var tag = out.getOrCreateTag();
@@ -225,8 +259,10 @@ public final class TsbAssembly {
         tag.putString(TsbItems.TAG_VARIANT, variant.name());
         tag.putString(TsbItems.TAG_BLADE2, blade2Mat);
         tag.putString(TsbItems.TAG_HANDLE, handleMat);
+        tag.putString(TsbItems.TAG_HANDLE2, handle2Mat);
         tag.putString(TsbItems.TAG_SAYA, sayaMat);
         tag.putString(TsbItems.TAG_SAYA2, saya2Mat);
+        putStats(tag, miningSpeed, miningTier, speedFactor);
 
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
@@ -245,6 +281,14 @@ public final class TsbAssembly {
     }
 
     // ------------------------------------------------------------------ 工具
+
+    /** 把 TIC3 式属性数值（挖掘速度 / 挖掘等级 / 攻速倍率）写进 NBT，供挖掘与提示框读取。 */
+    private static void putStats(net.minecraft.nbt.CompoundTag tag, float miningSpeed,
+                                 int miningTier, float speedFactor) {
+        tag.putFloat(TsbItems.TAG_MINING_SPEED, miningSpeed);
+        tag.putInt(TsbItems.TAG_MINING_TIER, miningTier);
+        tag.putFloat(TsbItems.TAG_ATTACK_SPEED, speedFactor);
+    }
 
     @Nullable
     private static ResourceLocation bladeTexture(String material) {

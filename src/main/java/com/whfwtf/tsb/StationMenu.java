@@ -8,12 +8,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-/** 装配台界面：左列（刀身 / 刀柄 / 刀鞘）= 打刀老三槽；右列（副刃 / 副鞘）补满即无上大快刀。 */
+/** 装配台界面：左列（刀身 / 刀柄 / 刀鞘）= 打刀老三槽；右列补副件，六槽填满即无上大快刀。 */
 public class StationMenu extends AbstractContainerMenu {
 
     /** 输入槽在界面里的坐标（下标与 {@link StationBlockEntity#SLOT_TYPES} 对应）。 */
     private static final int[][] SLOT_POS = {
-            {26, 20}, {44, 20}, {26, 40}, {26, 60}, {44, 60}
+            {26, 20}, {44, 20}, {26, 40}, {44, 40}, {26, 60}, {44, 60}
     };
 
     private final StationBlockEntity entity;

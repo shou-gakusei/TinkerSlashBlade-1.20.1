@@ -12,22 +12,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 /**
- * 装配台：刀身 + 刀柄 + 刀鞘 → 打刀；五槽填满 → 无上大快刀。
+ * 装配台：刀身 + 刀柄 + 刀鞘 → 打刀；六槽填满 → 无上大快刀。
  *
- * <p>五个输入槽：0/1 = 刀刃（刀身部件），2 = 刀柄，3/4 = 刀鞘。
+ * <p>六个输入槽：0 = 主刀刃，1 = 副刀刃，2 = 主刀柄，3 = 副刀柄，4 = 主刀鞘，5 = 副刀鞘。
  * <ul>
- *   <li>只填 0、2、3（1、4 留空）→ 打刀（老三槽配方，保持兼容）；</li>
- *   <li>五槽全满 → 无上大快刀（数值硬堆，见 {@link TsbAssembly#assembleDaikatana}）；</li>
+ *   <li>只填 0、2、4（1、3、5 留空）→ 打刀（老三槽配方，保持兼容）；</li>
+ *   <li>六槽全满 → 无上大快刀（数值硬堆，见 {@link TsbAssembly#assembleDaikatana}）；</li>
  *   <li>其它组合（缺件 / 混搭）→ 无产物。</li>
  * </ul>
  */
 public class StationBlockEntity extends AbstractStationEntity implements MenuProvider {
 
-    public static final int INPUT_SLOTS = 5; // 0/1 = 刀刃，2 = 刀柄，3/4 = 刀鞘
+    public static final int INPUT_SLOTS = 6; // 0/1 = 刀刃，2/3 = 刀柄，4/5 = 刀鞘
 
     /** 输入槽位对应的部件类型（顺序即槽位下标）。 */
     public static final TsbPartType[] SLOT_TYPES = {
-            TsbPartType.BLADE, TsbPartType.BLADE, TsbPartType.HANDLE, TsbPartType.SAYA, TsbPartType.SAYA
+            TsbPartType.BLADE, TsbPartType.BLADE,
+            TsbPartType.HANDLE, TsbPartType.HANDLE,
+            TsbPartType.SAYA, TsbPartType.SAYA
     };
 
     /** 当前输入能拼什么。 */
@@ -60,11 +62,12 @@ public class StationBlockEntity extends AbstractStationEntity implements MenuPro
 
     /** 按当前输入判定拼法；NONE 表示缺件或组合不合法。 */
     public Plan plan() {
-        boolean b0 = filled(0), b1 = filled(1), h = filled(2), s0 = filled(3), s1 = filled(4);
-        if (b0 && h && s0 && empty(1) && empty(4)) {
+        boolean b0 = filled(0), b1 = filled(1), h0 = filled(2), h1 = filled(3),
+                s0 = filled(4), s1 = filled(5);
+        if (b0 && h0 && s0 && empty(1) && empty(3) && empty(5)) {
             return Plan.UCHIGATANA;
         }
-        if (b0 && b1 && h && s0 && s1) {
+        if (b0 && b1 && h0 && h1 && s0 && s1) {
             return Plan.DAIKATANA;
         }
         return Plan.NONE;
@@ -73,14 +76,14 @@ public class StationBlockEntity extends AbstractStationEntity implements MenuPro
     @Override
     protected ItemStack computeResult() {
         return switch (plan()) {
-            case UCHIGATANA -> TsbAssembly.assemble(getItem(0), getItem(2), getItem(3));
+            case UCHIGATANA -> TsbAssembly.assemble(getItem(0), getItem(2), getItem(4));
             case DAIKATANA -> TsbAssembly.assembleDaikatana(getItem(0), getItem(1), getItem(2),
-                    getItem(3), getItem(4));
+                    getItem(3), getItem(4), getItem(5));
             case NONE -> ItemStack.EMPTY;
         };
     }
 
-    /** 取走产物时消耗输入：打刀消耗 0/2/3，大快刀五槽全消耗。 */
+    /** 取走产物时消耗输入：打刀消耗 0/2/4，大快刀六槽全消耗。 */
     public void consumeInputs() {
         switch (plan()) {
             case UCHIGATANA -> {

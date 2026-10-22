@@ -12,6 +12,7 @@ public class StationScreen extends AbstractContainerScreen<StationMenu> {
 
     private static final ResourceLocation TEXTURE =
             ResourceLocation.tryParse("tinkersslashblade:textures/gui/blade_station.png");
+    private static final int LABEL_COLOR = 0xFF404040;
 
     public StationScreen(StationMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -23,5 +24,13 @@ public class StationScreen extends AbstractContainerScreen<StationMenu> {
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+
+        // 槽位分工提示：左列 = 主件，右列 = 副件；六槽填满 = 无上大快刀
+        int y = topPos + 52;
+        for (String key : new String[]{"tsb.station.hint_main", "tsb.station.hint_sub",
+                "tsb.station.hint_daikatana"}) {
+            graphics.drawString(font, Component.translatable(key), leftPos + 70, y, LABEL_COLOR, false);
+            y += 11;
+        }
     }
 }

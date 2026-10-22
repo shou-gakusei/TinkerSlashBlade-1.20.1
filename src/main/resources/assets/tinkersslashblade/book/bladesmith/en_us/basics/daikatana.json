@@ -2,18 +2,22 @@
   "title": "The Supreme Great Blade",
   "text": [
     {
-      "text": "The supreme great blade is the station's full form: one handle, two blades and two saya, all five parts on the bench and every number stacked."
+      "text": "The supreme great blade is the station's full form: two blades, two handles and two saya, all six parts on the bench and every number stacked."
     },
     {
-      "text": "Durability = (main blade + second blade) durability × handle durability × 1.2; attack = (main + second) attack × handle attack + half of each saya's attack × 2 + 1. All five parts may be different materials.",
+      "text": "Each pair is added separately. Durability = (both blades + both saya) durability × 1.2 (great blade factor) × (1 + both handle durability modifiers); attack = (both blades + both saya) attack × (1 + both handle attack modifiers) + 1; mining speed = (both blades + both saya) mining speed × (1 + both handle mining modifiers), mining level taken from the best of the six; attack speed = 1.6 × (1 + both handle speed modifiers). All six parts may be different materials.",
       "paragraph": true
     },
     {
-      "text": "Colour, slash art and repair material follow the main blade; the second blade's trait counts at 75%, the handle and both saya at 50% each.",
+      "text": "Handle modifiers follow Tinkers' own percentage semantics: -25% means ×0.75, and the two handles' modifiers are added separately - they may cancel each other out or stack very high.",
       "paragraph": true
     },
     {
-      "text": "A great blade blank can also be forged directly at the blade forge - pick Supreme Great Blade in its recipe list - but that is only a down payment: filling all five slots is the real thing.",
+      "text": "Colour, slash art, texture and repair material follow the main blade; the second blade's trait counts at 75%, both handles and both saya at 50% each.",
+      "paragraph": true
+    },
+    {
+      "text": "A great blade blank can also be forged directly at the blade forge - pick Supreme Great Blade in its recipe list - but that is only a down payment: filling all six slots is the real thing.",
       "paragraph": true
     }
   ]

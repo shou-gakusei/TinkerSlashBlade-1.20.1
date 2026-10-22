@@ -35,6 +35,11 @@
     "data": "basics/daikatana.json"
   },
   {
+    "name": "tool_use",
+    "type": "mantle:text",
+    "data": "basics/tool_use.json"
+  },
+  {
     "name": "odachi",
     "type": "mantle:text",
     "data": "basics/odachi.json"

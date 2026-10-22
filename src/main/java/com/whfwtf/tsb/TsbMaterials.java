@@ -62,7 +62,7 @@ public final class TsbMaterials {
             return null;
         }
         return new TsbMaterial.Entry(path(idOrPath), stats.durability(), stats.attack(),
-                "", 0xAAAAAA, material.getTier());
+                stats.miningSpeed(), stats.tier().getLevel(), "", 0xAAAAAA, material.getTier());
     }
 
     /** 材料显示名：TAIGA 的材料用「XX锭」的名字，其它材料用匠魂自带的材料名。 */
@@ -87,6 +87,13 @@ public final class TsbMaterials {
     public static int tier(String idOrPath) {
         TsbMaterial.Entry entry = TsbMaterial.ALL.get(path(idOrPath));
         return entry == null ? 1 : entry.tier();
+    }
+
+    /** 挖掘等级的显示名（木 / 石 / 铁 / 钻石 / 下界合金，更高等级走 {@code tsb.tier.generic}）。 */
+    public static Component tierName(int level) {
+        return level >= 0 && level <= 4
+                ? Component.translatable("tsb.tier." + level)
+                : Component.translatable("tsb.tier.generic", level);
     }
 
     /** 是否本 mod 认识的 TAIGA 材料（有刀性）。 */
@@ -115,19 +122,27 @@ public final class TsbMaterials {
         return entry == null ? TsbTrait.NONE : TsbTrait.byId(entry.trait());
     }
 
-    /** 刀柄材料的耐久倍率（匠魂 HandleMaterialStats），拿不到就用 1.0。 */
+    /**
+     * 刀柄材料的耐久修饰符（匠魂 HandleMaterialStats.durability，-0.5~+0.35 的<b>百分比</b>；
+     * 未知材料按 0）。最终倍率 = 1 + 各刀柄修饰符之和。
+     */
     public static float handleDurability(String idOrPath) {
-        return handleStat(idOrPath, HandleMaterialStats::durability, 1.0F);
+        return handleStat(idOrPath, HandleMaterialStats::durability, 0.0F);
     }
 
-    /** 刀柄材料的攻击倍率。 */
+    /** 刀柄材料的攻击修饰符（百分比）。 */
     public static float handleAttack(String idOrPath) {
-        return handleStat(idOrPath, HandleMaterialStats::attackDamage, 1.0F);
+        return handleStat(idOrPath, HandleMaterialStats::attackDamage, 0.0F);
     }
 
-    /** 刀柄材料的攻击速度倍率。 */
+    /** 刀柄材料的攻击速度修饰符（百分比）。 */
     public static float handleMeleeSpeed(String idOrPath) {
-        return handleStat(idOrPath, HandleMaterialStats::meleeSpeed, 1.0F);
+        return handleStat(idOrPath, HandleMaterialStats::meleeSpeed, 0.0F);
+    }
+
+    /** 刀柄材料的挖掘速度修饰符（百分比）。 */
+    public static float handleMiningSpeed(String idOrPath) {
+        return handleStat(idOrPath, HandleMaterialStats::miningSpeed, 0.0F);
     }
 
     private static float handleStat(String idOrPath,

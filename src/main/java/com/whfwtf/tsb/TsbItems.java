@@ -38,8 +38,16 @@ public final class TsbItems {
     public static final String TAG_SAYA = "tsb_saya";
     /** 无上大快刀：副刀刃材料（第二把刀身）。 */
     public static final String TAG_BLADE2 = "tsb_blade2";
+    /** 无上大快刀：副刀柄材料（第二根刀柄）。 */
+    public static final String TAG_HANDLE2 = "tsb_handle2";
     /** 无上大快刀：副刀鞘材料（第二段配重）。 */
     public static final String TAG_SAYA2 = "tsb_saya2";
+    /** 刀的挖掘速度（TIC3 式属性数值，写入 NBT 供挖掘与提示框用）。 */
+    public static final String TAG_MINING_SPEED = "tsb_mining_speed";
+    /** 刀的挖掘等级（数字：木0/石1/铁2/钻石3/下界合金4，更高依 moreharvestinglevel）。 */
+    public static final String TAG_MINING_TIER = "tsb_mining_tier";
+    /** 刀的攻击速度倍率（刀柄攻速系数之和，1.0 = 不修正）。 */
+    public static final String TAG_ATTACK_SPEED = "tsb_attack_speed";
 
     /** 《刀匠标准手册》。 */
     public static final RegistryObject<Item> GUIDE =

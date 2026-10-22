@@ -1,0 +1,20 @@
+{
+  "title": "As a Tool",
+  "text": [
+    {
+      "text": "The blade is an omnipotent tool: its mining level comes from its materials, so it can mine anything that does not demand a higher level, at the blade's own mining speed; on blocks it cannot touch it behaves like a random lump of iron."
+    },
+    {
+      "text": "On an assembled blade, mining speed is the sum of the blades' and saya's mining speed scaled by the handle modifier, and the mining level is the best of the parts - want a good miner, pick a high-level blade material.",
+      "paragraph": true
+    },
+    {
+      "text": "The tooltip has three layers, just like Tinkers' own: by default it shows durability, slash art and trait; hold Shift for the stat numbers (durability / melee damage / attack speed / mining level / mining speed); hold Ctrl for the per-part details.",
+      "paragraph": true
+    },
+    {
+      "text": "In the Ctrl view, blades and saya list durability, mining level, mining speed and melee damage, while handles list the four percentage modifiers (durability / attack / speed / mining) - one to one with Tinkers 3's detail view. Only assembled blades keep part records, so a blade forged straight at the forge has no such detail layer.",
+      "paragraph": true
+    }
+  ]
+}
