@@ -300,17 +300,34 @@ public final class TsbAssembly {
                 TsbMaterials.displayName(material));
     }
 
-    /** 材料锭对应哪个材料 ID；不是可识别的材料锭就返回 null。 */
+    /**
+     * 材料锭对应哪个材料完整 ID；不是可识别的材料锭就返回 null。
+     *
+     * <p>TAIGA（{@code taiga:xxx_ingot}）、原版（{@code minecraft:iron_ingot}）与
+     * 匠魂（{@code tconstruct:manyullyn_ingot}）的锭都认：按「锭命名空间 + 同名 →
+     * taiga: → tconstruct:」顺序试探，{@link TsbMaterials#resolve} 认得出（有刀身属性）即返回。
+     */
     @Nullable
     public static String materialOfIngot(ItemStack stack) {
         if (stack.isEmpty()) {
             return null;
         }
         var id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (id == null || !"taiga".equals(id.getNamespace()) || !id.getPath().endsWith("_ingot")) {
+        if (id == null || !id.getPath().endsWith("_ingot")) {
             return null;
         }
-        String mat = id.getPath().substring(0, id.getPath().length() - "_ingot".length());
-        return TsbMaterial.ALL.containsKey(mat) ? "taiga:" + mat : null;
+        String path = id.getPath().substring(0, id.getPath().length() - "_ingot".length());
+        String[] candidates = {
+                id.getNamespace() + ":" + path,
+                "taiga:" + path,
+                "tconstruct:" + path,
+                path
+        };
+        for (String candidate : candidates) {
+            if (TsbMaterials.resolve(candidate) != null) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

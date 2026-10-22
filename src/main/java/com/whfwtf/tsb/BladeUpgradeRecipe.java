@@ -51,17 +51,13 @@ public class BladeUpgradeRecipe extends CustomRecipe {
                 }
                 blade = stack;
                 material = TsbItems.materialOf(stack);
-                if (material.isEmpty() || !TsbMaterial.ALL.containsKey(material)) {
+                if (material.isEmpty() || TsbMaterials.resolve(material) == null) {
                     return null;
                 }
                 continue;
             }
-            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-            if (id == null || !"taiga".equals(id.getNamespace()) || !id.getPath().endsWith("_ingot")) {
-                return null;
-            }
-            String mat = id.getPath().substring(0, id.getPath().length() - "_ingot".length());
-            if (!mat.equals(TsbMaterials.path(material))) {
+            String mat = TsbAssembly.materialOfIngot(stack);
+            if (mat == null || !TsbMaterials.path(mat).equals(TsbMaterials.path(material))) {
                 return null;
             }
             ingots += stack.getCount();

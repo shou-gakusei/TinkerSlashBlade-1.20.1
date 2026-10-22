@@ -53,6 +53,14 @@ public final class TsbItems {
     public static final RegistryObject<Item> GUIDE =
             ITEMS.register("tsb_guide_bladesmith", () -> new TsbGuideItem(new Item.Properties().stacksTo(1)));
 
+    /** 强化卷轴：工匠砧里给刀免费涨 Refine（+1 / +5 / +10，吃附魔书贴图）。 */
+    public static final RegistryObject<Item> SCROLL_1 =
+            ITEMS.register("tsb_scroll_1", () -> new TsbScrollItem(1, new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> SCROLL_5 =
+            ITEMS.register("tsb_scroll_5", () -> new TsbScrollItem(5, new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> SCROLL_10 =
+            ITEMS.register("tsb_scroll_10", () -> new TsbScrollItem(10, new Item.Properties().stacksTo(16)));
+
     static {
         Map<TsbBladeVariant, RegistryObject<Item>> blanks = new EnumMap<>(TsbBladeVariant.class);
         Map<TsbBladeVariant, RegistryObject<TsbBladeItem>> blades = new EnumMap<>(TsbBladeVariant.class);
@@ -130,6 +138,9 @@ public final class TsbItems {
                     variant == TsbBladeVariant.SHIRASAYA ? "basalt" : "ignitz", 1));
         }
         output.accept(GUIDE.get());
+        output.accept(SCROLL_1.get());
+        output.accept(SCROLL_5.get());
+        output.accept(SCROLL_10.get());
         TsbParts.appendToTab(output);
         output.accept(TsbBlocks.BLADE_FORGE.get());
         output.accept(TsbBlocks.BLADE_STATION.get());

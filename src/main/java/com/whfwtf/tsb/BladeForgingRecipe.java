@@ -31,18 +31,16 @@ public class BladeForgingRecipe extends CustomRecipe {
         super(id, category);
     }
 
-    /** 若该物品是 {@code taiga:<material>_ingot} 且材料有匠魂数值，返回材料名，否则 null。 */
+    /**
+     * 若该物品是可识别的材料锭，返回材料完整 ID，否则 null。
+     *
+     * <p>不止 TAIGA：原版（{@code minecraft:iron_ingot}）与匠魂（{@code tconstruct:manyullyn_ingot}）
+     * 的锭也认——按「锭命名空间 + 同名材料 → taiga: → tconstruct:」顺序试探，
+     * {@link TsbMaterials#resolve} 认得出（有匠魂刀身属性）就算数。
+     */
     @Nullable
     private static String materialOf(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return null;
-        }
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (id == null || !"taiga".equals(id.getNamespace()) || !id.getPath().endsWith("_ingot")) {
-            return null;
-        }
-        String mat = id.getPath().substring(0, id.getPath().length() - "_ingot".length());
-        return TsbMaterial.ALL.containsKey(mat) ? mat : null;
+        return TsbAssembly.materialOfIngot(stack);
     }
 
     /** 一次配方的解析结果。 */
@@ -75,7 +73,7 @@ public class BladeForgingRecipe extends CustomRecipe {
             }
 
             String mat = materialOf(stack);
-            if (mat == null || (material != null && !TsbMaterials.path(material).equals(mat))) {
+            if (mat == null || (material != null && !TsbMaterials.path(material).equals(TsbMaterials.path(mat)))) {
                 return null;
             }
             material = mat;

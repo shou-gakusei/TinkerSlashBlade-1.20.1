@@ -66,7 +66,15 @@ public final class TsbParts {
                 && !materialOf(stack).isEmpty();
     }
 
-    /** 创造模式标签页：TAIGA 全部材料 × 全部部件（外加铸模）。 */
+    /** 创造模式标签页里额外展示的原版 + 匠魂材料（TAIGA 之外；部件制造台里全部匠魂材料都能做）。 */
+    private static final String[] EXTRA_MATERIALS = {
+            "tconstruct:wood", "tconstruct:rock", "tconstruct:flint", "tconstruct:iron",
+            "tconstruct:copper", "tconstruct:gold", "tconstruct:diamond", "tconstruct:netherite",
+            "tconstruct:cobalt", "tconstruct:manyullyn", "tconstruct:slimesteel",
+            "tconstruct:amethyst_bronze", "tconstruct:queens_slime", "tconstruct:hepatizon"
+    };
+
+    /** 创造模式标签页：TAIGA 全部材料 × 全部部件（外加常见原版/匠魂材料与铸模）。 */
     public static void appendToTab(CreativeModeTab.Output output) {
         for (TsbPartType type : TsbPartType.values()) {
             output.accept(cast(type));
@@ -74,6 +82,14 @@ public final class TsbParts {
         for (TsbMaterial.Entry entry : TsbMaterial.ALL.values()) {
             for (TsbPartType type : TsbPartType.values()) {
                 output.accept(TsbPartItem.create(type, entry.id(), 1));
+            }
+        }
+        // 原版 + 匠魂自带材料：resolve 认得出的才摆（材料没注册会被自动跳过）
+        for (String material : EXTRA_MATERIALS) {
+            if (TsbMaterials.resolve(material) != null) {
+                for (TsbPartType type : TsbPartType.values()) {
+                    output.accept(TsbPartItem.create(type, material, 1));
+                }
             }
         }
     }

@@ -41,6 +41,14 @@ public class TsbBladeItem extends ItemSlashBlade {
 
     private static final UUID TSB_SPEED_UUID = UUID.fromString("6f0a2c1e-9b7d-4f2a-8f3e-1c5d7a9b0e21");
 
+    /** RankAttackDamage 三档门槛（照 1.12.2 老版 TSB 的阶级观）：SS / SSS / Limit。 */
+    private static final float RANK_SS = 5.0F;
+    private static final float RANK_SSS = 8.0F;
+    private static final float RANK_LIMIT = 11.0F;
+    private static final ChatFormatting[] RANK_COLORS = {
+            ChatFormatting.GOLD, ChatFormatting.YELLOW, ChatFormatting.LIGHT_PURPLE, ChatFormatting.RED
+    };
+
     private final TsbBladeVariant variant;
 
     public TsbBladeItem(TsbBladeVariant variant, Properties properties) {
@@ -242,6 +250,26 @@ public class TsbBladeItem extends ItemSlashBlade {
             tooltip.add(Component.translatable("tsb.trait." + trait.name().toLowerCase() + ".desc")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
+
+        // RankAttackDamage（照 1.12.2 老版 TSB 的三档伤害显示）
+        float attackValue = stack.getCapability(ItemSlashBlade.BLADESTATE)
+                .map(mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState::getBaseAttackModifier)
+                .orElse(0.0F);
+        int rank = attackValue >= RANK_LIMIT ? 3
+                : attackValue >= RANK_SSS ? 2
+                : attackValue >= RANK_SS ? 1 : 0;
+        tooltip.add(Component.translatable("tsb.tooltip.rank").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.literal("B-SS").withStyle(ChatFormatting.GOLD)
+                .append(Component.literal("/").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal("SSS").withStyle(ChatFormatting.LIGHT_PURPLE))
+                .append(Component.literal("/").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal("Limit").withStyle(ChatFormatting.RED)));
+        tooltip.add(Component.literal(String.format("+%.1f", attackValue))
+                .withStyle(RANK_COLORS[rank])
+                .append(Component.literal(" ").withStyle(ChatFormatting.GRAY))
+                .append(Component.translatable("tsb.tooltip.rank." + rank)
+                        .withStyle(RANK_COLORS[rank])));
+
         if (variant == TsbBladeVariant.SHIRASAYA) {
             tooltip.add(Component.translatable("tsb.tooltip.plain").withStyle(ChatFormatting.DARK_GRAY));
         }

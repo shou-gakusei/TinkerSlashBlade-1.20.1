@@ -28,5 +28,9 @@ public final class TsbRecipes {
             SERIALIZERS.register("tsb_blade_upgrade",
                     () -> new SimpleCraftingRecipeSerializer<>(BladeUpgradeRecipe::new));
 
+    /** 工匠砧强化：刀 + 强化卷轴 → Refine 提升（JSON: {@code {"type":"tinkersslashblade:tsb_reinforce"}}）。 */
+    public static final RegistryObject<RecipeSerializer<TsbReinforceRecipe>> REINFORCE =
+            SERIALIZERS.register("tsb_reinforce", () -> TsbReinforceRecipe.Serializer.INSTANCE);
+
     private TsbRecipes() {}
 }

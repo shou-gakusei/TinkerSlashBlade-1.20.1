@@ -99,5 +99,16 @@
   "tsb.forge.hint": "刀胚 + 1~3 份同材料锭",
   "tsb.station.hint_main": "左列：刀刃 / 刀柄 / 刀鞘",
   "tsb.station.hint_sub": "右列：无上大快刀的副刀刃 / 副刀柄 / 副刀鞘",
-  "tsb.station.hint_daikatana": "六槽全满 → 无上大快刀"
+  "tsb.station.hint_daikatana": "六槽全满 → 无上大快刀",
+  "item.tinkersslashblade.tsb_scroll_1": "强化+1卷轴",
+  "item.tinkersslashblade.tsb_scroll_5": "强化+5卷轴",
+  "item.tinkersslashblade.tsb_scroll_10": "强化+10卷轴",
+  "tsb.scroll.desc": "放入工匠砧（含工具/武器/防具台）与刀一起强化：Refine +%s",
+  "tsb.scroll.desc2": "不吃任何强化槽位，无材料成本",
+  "tsb.reinforce.no_scroll": "需要强化卷轴",
+  "tsb.tooltip.rank": "RankAttackDamage",
+  "tsb.tooltip.rank.0": "B",
+  "tsb.tooltip.rank.1": "SS",
+  "tsb.tooltip.rank.2": "SSS",
+  "tsb.tooltip.rank.3": "Limit"
 }
