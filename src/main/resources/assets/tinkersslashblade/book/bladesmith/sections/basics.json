@@ -33,5 +33,10 @@
     "name": "daikatana",
     "type": "mantle:text",
     "data": "basics/daikatana.json"
+  },
+  {
+    "name": "odachi",
+    "type": "mantle:text",
+    "data": "basics/odachi.json"
   }
 ]

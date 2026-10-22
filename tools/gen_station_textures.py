@@ -4,7 +4,7 @@
 输出：
   textures/block/blade_forge.png      锻造台方块
   textures/block/blade_station.png    装配台方块
-  textures/gui/blade_forge.png        锻造台界面（176x166）
+  textures/gui/blade_forge.png        锻造台界面（176x204，工匠砧式）
   textures/gui/blade_station.png      装配台界面（176x166）
   textures/item/tsb_part_blade.png    刀身
   textures/item/tsb_part_handle.png   刀柄
@@ -91,6 +91,18 @@ def slot(d, x, y):
     d.line([(x, y + 17), (x + 17, y + 17)], fill=PANEL_LT)
 
 
+def player_inventory(d, y0):
+    """画玩家背包（3x9）+ 快捷栏，y0 是背包第一行的 Y。
+
+    快捷栏比第四行网格低 4 格（+58），和原版容器一致（label 在 y0-12）。
+    """
+    for row in range(3):
+        for col in range(9):
+            slot(d, 8 + col * 18, y0 + row * 18)
+    for col in range(9):
+        slot(d, 8 + col * 18, y0 + 58)
+
+
 def container_gui(machine_slots, out_slot, arrow):
     """画一个完整的容器界面：面板 + 机器槽 + 玩家背包（3x9 + 快捷栏）。"""
     im, d = panel(176, 166)
@@ -104,21 +116,37 @@ def container_gui(machine_slots, out_slot, arrow):
     d.line([(x0, y), (x1 - 4, y)], fill=PANEL_DK, width=2)
     d.polygon([(x1 - 5, y - 4), (x1, y), (x1 - 5, y + 4)], fill=PANEL_DK)
 
-    # 玩家背包与快捷栏
-    for row in range(3):
-        for col in range(9):
-            slot(d, 8 + col * 18, 84 + row * 18)
-    for col in range(9):
-        slot(d, 8 + col * 18, 142)
+    player_inventory(d, 84)
     return im
 
 
 def gui_forge():
-    return container_gui(
-        [(26, 26), (62, 26), (80, 26), (98, 26)],
-        (140, 26),
-        (122, 137, 34),
-    )
+    """工匠砧式锻造台界面（176x204）：左配方列 + 右刀胚/锭/产物。
+
+    坐标与 ForgeMenu / ForgeScreen 对齐：
+      配方槽 (8,30) (8,54)；分隔线 x=76；
+      刀胚 (115,22)；锭 (97,46) (115,46) (133,46)；
+      竖向箭头 x=124；产物 (115,82)；背包 y0=122。
+    """
+    im, d = panel(176, 204)
+
+    # 左列：配方槽（选中高亮由界面代码描边，这里只画槽底）
+    slot(d, 8, 30)
+    slot(d, 8, 54)
+    # 配方列分隔线
+    d.line([(76, 16), (76, 84)], fill=PANEL_DK, width=1)
+
+    # 右侧：刀胚 → 材料锭 →（竖向箭头）→ 产物
+    slot(d, 115, 22)
+    for i in range(3):
+        slot(d, 97 + i * 18, 46)
+    slot(d, 115, 82)
+    x = 124
+    d.line([(x, 66), (x, 73)], fill=PANEL_DK, width=2)
+    d.polygon([(x - 4, 72), (x + 4, 72), (x, 78)], fill=PANEL_DK)
+
+    player_inventory(d, 122)
+    return im
 
 
 def gui_station():

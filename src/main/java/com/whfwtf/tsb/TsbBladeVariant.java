@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
  *       适合先用它试材料，再走拔刀剑本体的「妖刀化」路线。</li>
  *   <li>{@link #DAIKATANA} 无上大快刀：大快刀型，只在装配台用 5 个部件拼出来
  *       （刀柄×1 + 刀刃×2 + 刀鞘×2），五槽数值全部硬堆；刀胚路线只算廉价预支。</li>
+ *   <li>{@link #ODACHI} 大太刀：与无上大快刀同级的重刀，但偏向攻击——
+ *       攻击修正更高（+1.5）、耐久系数略低（1.1），只在拔刀剑锻造台的
+ *       工匠砧配方列表里出品（与无上大快刀并列两条配方）。</li>
  * </ul>
  */
 public enum TsbBladeVariant {
@@ -21,7 +24,8 @@ public enum TsbBladeVariant {
     UCHIGATANA("tsb_blade", "tsb_blade_blank", 1.0F, 0.0F, null),
     SHIRASAYA("tsb_blade_white", "tsb_blade_blank_white", 0.6F, -1.0F,
             ResourceLocation.tryParse("slashblade:model/white.png")),
-    DAIKATANA("tsb_blade_daikatana", "tsb_blade_blank_daikatana", 1.2F, 1.0F, null);
+    DAIKATANA("tsb_blade_daikatana", "tsb_blade_blank_daikatana", 1.2F, 1.0F, null),
+    ODACHI("tsb_blade_odachi", "tsb_blade_blank_odachi", 1.1F, 1.5F, null);
 
     private final String itemPath;
     private final String blankPath;

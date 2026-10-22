@@ -2,10 +2,14 @@
   "title": "Forge & Station",
   "text": [
     {
-      "text": "Two roads lead to the same blade: the forge is quick, the station is precise."
+      "text": "Three roads lead to a SlashBlade: the crafting table is quick, the forge picks the blade type, the station is precise."
     },
     {
-      "text": "Forge: put a blade blank on the left and one to three ingots of the same material on the right. Extra ingots only add durability, ten percent each.",
+      "text": "The forge works like a Tinker's anvil: a recipe list on the left - click an entry to choose what to forge, the odachi or the supreme great blade, and the choice is remembered by the block - then a blank of that type and one to three ingots of the same material on the right. Extra ingots only add durability, ten percent each.",
+      "paragraph": true
+    },
+    {
+      "text": "The uchigatana and the shirasaya are not on the forge's list: craft those at a crafting table, or build them from parts at the station.",
       "paragraph": true
     },
     {

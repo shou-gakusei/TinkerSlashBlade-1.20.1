@@ -6,9 +6,12 @@
   "item.tinkersslashblade.tsb_blade_white.named": "Shirasaya · %s",
   "item.tinkersslashblade.tsb_blade_daikatana": "Supreme Great Blade",
   "item.tinkersslashblade.tsb_blade_daikatana.named": "Supreme Great Blade · %s",
+  "item.tinkersslashblade.tsb_blade_odachi": "Odachi",
+  "item.tinkersslashblade.tsb_blade_odachi.named": "Odachi · %s",
   "item.tinkersslashblade.tsb_blade_blank": "Blade Blank",
   "item.tinkersslashblade.tsb_blade_blank_white": "Shirasaya Blank",
   "item.tinkersslashblade.tsb_blade_blank_daikatana": "Great Blade Blank",
+  "item.tinkersslashblade.tsb_blade_blank_odachi": "Odachi Blank",
   "item.tinkersslashblade.tsb_guide_bladesmith": "Bladesmith's Standard Manual",
   "jei.tinkersslashblade.blade_forging": "Blade Forging",
   "tsb.jei.stats": "Durability %s · Attack %s",
@@ -67,5 +70,7 @@
   "item.tinkersslashblade.tsb_part_saya_cast": "Saya Cast",
   "jei.tinkersslashblade.part_casting": "Blade Part Casting",
   "tsb.jei.material": "Material: %s",
-  "tsb.jei.cost": "Uses %s material units"
+  "tsb.jei.cost": "Uses %s material units",
+  "tsb.forge.recipes": "Recipes",
+  "tsb.forge.hint": "Blank + 1-3 ingots of one material"
 }

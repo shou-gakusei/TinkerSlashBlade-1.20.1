@@ -98,7 +98,8 @@ public class TsbJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(FORGING,
                 TsbItems.blank(TsbBladeVariant.UCHIGATANA),
                 TsbItems.blank(TsbBladeVariant.SHIRASAYA),
-                TsbItems.blank(TsbBladeVariant.DAIKATANA));
+                TsbItems.blank(TsbBladeVariant.DAIKATANA),
+                TsbItems.blank(TsbBladeVariant.ODACHI));
         registration.addRecipeCatalysts(PART_CASTING,
                 TsbParts.cast(TsbPartType.BLADE),
                 TsbParts.cast(TsbPartType.HANDLE),

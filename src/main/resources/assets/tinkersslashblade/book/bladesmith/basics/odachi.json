@@ -1,0 +1,20 @@
+{
+  "title": "Odachi",
+  "text": [
+    {
+      "text": "The odachi is the other great blade on the blade forge's recipe list, opposite in temper to the supreme great blade: this one hits harder."
+    },
+    {
+      "text": "Durability = material durability × 1.1; attack = material attack + 1.5. Compare the supreme great blade's 1.2 durability and +1.0 attack - one is light on its feet, the other hits like an anvil.",
+      "paragraph": true
+    },
+    {
+      "text": "Colour, slash art and repair material still follow the material; an odachi blank is six iron ingots and a stick.",
+      "paragraph": true
+    },
+    {
+      "text": "Pick Odachi in the recipe list and the forge only accepts odachi blanks; click the other entry to switch.",
+      "paragraph": true
+    }
+  ]
+}
