@@ -171,9 +171,11 @@ public class TsbAnvilRepairRecipe implements ITinkerStationRecipe {
             return RecipeResult.failure("tsb.anvil_repair.no_ingot");
         }
         // 满耐久且没坏 → 明确报错（而不是静默不给结果）。
-        // 判定用「已损值 <= 0」：拔刀剑的 BladeState 是原版语义，damage == 0 即满耐久。
-        var current = tool.getCapability(ItemSlashBlade.BLADESTATE).resolve().orElse(null);
-        if (current != null && current.getDamage() <= 0 && !current.isBroken()) {
+        // 拔刀剑的真实耐久是 NBT Damage 标签，BladeState.damage 不参与战斗掉耐久。
+        boolean broken = tool.getCapability(ItemSlashBlade.BLADESTATE)
+                .map(mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState::isBroken)
+                .orElse(false);
+        if (tool.getDamageValue() <= 0 && !broken) {
             return RecipeResult.failure("tsb.anvil_repair.already_full");
         }
         ItemStack out = tool.copy();
@@ -183,8 +185,10 @@ public class TsbAnvilRepairRecipe implements ITinkerStationRecipe {
             if (max > 0) {
                 // 回复量按「实际吃掉的锭数」算，不是固定 3 锭，避免「放 1 锭却按 3 锭回血」
                 int restore = Math.max(1, Math.round(max * RESTORE_PER_INGOT * ingots));
-                state.setDamage(Math.max(0, state.getDamage() - restore));
+                // 耐久读写走物品 NBT 的 Damage 标签（与耐久条同口径）
+                out.setDamageValue(Math.max(0, out.getDamageValue() - restore));
             }
+            // 只要修了就解除破损；修满与否不影响可用性
             if (!state.isSealed()) {
                 state.setBroken(false);
             }

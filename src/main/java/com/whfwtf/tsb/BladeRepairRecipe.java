@@ -18,8 +18,9 @@ import java.util.Set;
 /**
  * 刀匠研磨：刀锻冶匠魂的刀 + 同材料匠魂锭 → 修复 25%（每锭）。
  *
- * <p>拔刀剑的耐久存在 BladeState 里，原版铁砧的修复路径写的是物品 NBT 的 Damage，
- * 对本 mod 的刀无效，所以这里单独给一条合成修复路线：把刀和它自己的材料锭一起放进工作台。
+ * <p>拔刀剑 1.9.65 的真实耐久是物品 NBT 的 Damage 标签（{@link ItemStack#getDamageValue()}，
+ * 与物品耐久条同口径），所以本配方判断「是否已损」与写回修复量都走同一个标签，
+ * 不需要额外维护 BladeState 里的第二套数值。
  *
  * <p>「同材料」指六槽里任意一件的材料（刀身 / 副刀身 / 主柄 / 副柄 / 刀鞘 / 副刀鞘），
  * 即做这把刀的任何一种材料锭都能修；修复同时清除刀的 broken 状态。
@@ -86,7 +87,8 @@ public class BladeRepairRecipe extends CustomRecipe {
         if (blade.isEmpty() || ingots < 1 || ingots > MAX_INGOTS) {
             return null;
         }
-        // 满耐久且没坏就不用修了，避免「修了个寂寞」还吃材料
+        // 满耐久且没坏就不用修了，避免「修了个寂寞」还吃材料。
+        // 耐久判断用 NBT Damage 标签（getDamageValue），与 ItemStack 耐久条同口径。
         ItemStack finalBlade = blade;
         if (blade.getDamageValue() <= 0
                 && !blade.getCapability(ItemSlashBlade.BLADESTATE).resolve()

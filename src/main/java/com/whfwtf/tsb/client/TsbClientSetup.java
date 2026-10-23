@@ -70,8 +70,10 @@ public final class TsbClientSetup {
             return 0xFFFFFFFF;
         }
         // 1) 静态颜色表（最全、最可靠）
+        // 注意：色表存的是 0xAARRGGBB，alpha = 0xFF 时 int 是负数，
+        // 所以只能用「!= -1」判断未命中，不能用「>= 0」。
         int color = TsbMaterialColors.colorOf(id);
-        if (color >= 0) {
+        if (color != -1) {
             return color;
         }
         // 2) TAIGA 老表

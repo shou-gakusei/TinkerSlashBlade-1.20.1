@@ -51,7 +51,6 @@ public final class TsbAssembly {
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
             state.setMaxDamage(durability);
-            state.setDamage(0);
             state.setBaseAttackModifier(attack);
             state.setColorCode(entry.color());
             state.setSlashArtsKey(variant == TsbBladeVariant.SHIRASAYA
@@ -94,7 +93,6 @@ public final class TsbAssembly {
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
             state.setMaxDamage(newMax);
-            state.setDamage(newDamage);
             state.setBaseAttackModifier(attack(entry, target));
             state.setColorCode(entry.color());
             state.setSlashArtsKey(TsbArts.forMaterial(entry));
@@ -106,22 +104,25 @@ public final class TsbAssembly {
                 state.setBroken(false);
             }
         });
+        // 旧刀的 Damage 按比例换算后写回 NBT（真实耐久口径，见 remainingDurability）
+        out.setDamageValue(newDamage);
         return out;
     }
 
-    /** 刀 + 同材料锭 → 修复（每锭 25%）。 */
+    /** 刀 + 同材料锭 → 修复（每锭 25%，最少回 1 点）。 */
     public static ItemStack repair(ItemStack source, int ingots) {
         if (source.isEmpty() || ingots <= 0) {
             return ItemStack.EMPTY;
         }
         ItemStack out = source.copy();
         out.setCount(1);
+        // 耐久读写一律走物品 NBT 的 Damage 标签（与耐久条同口径）
         int max = out.getMaxDamage();
         int restore = Math.max(1, Math.round(max * 0.25F * ingots));
+        out.setDamageValue(Math.max(0, out.getDamageValue() - restore));
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
-            int damage = Math.max(0, state.getDamage() - restore);
-            state.setDamage(damage);
-            if (damage <= 0 && !state.isSealed()) {
+            // 只要修了就清 broken（不要求修满），修过的刀即可正常使用
+            if (!state.isSealed()) {
                 state.setBroken(false);
             }
         });
@@ -177,7 +178,6 @@ public final class TsbAssembly {
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
             state.setMaxDamage(durability);
-            state.setDamage(0);
             state.setBaseAttackModifier(attack);
             state.setColorCode(blade.color());
             state.setSlashArtsKey(TsbArts.forMaterial(blade));
@@ -267,7 +267,6 @@ public final class TsbAssembly {
         out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             state.setNonEmpty();
             state.setMaxDamage(durability);
-            state.setDamage(0);
             state.setBaseAttackModifier(attack);
             state.setColorCode(blade.color());
             state.setSlashArtsKey(TsbArts.forMaterial(blade));

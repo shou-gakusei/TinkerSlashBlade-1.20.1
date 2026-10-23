@@ -5,7 +5,7 @@ issueTrackerURL=""
 
 [[mods]]
 modId="tinkersslashblade"
-version="1.20.1-0.5.4"
+version="${mod_version}"
 displayName="Tinker's SlashBlade"
 authors="whfwtf"
 description='''
