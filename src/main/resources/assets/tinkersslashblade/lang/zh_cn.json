@@ -86,6 +86,9 @@
   "item.tinkersslashblade.tsb_part_handle": "刀柄",
   "item.tinkersslashblade.tsb_part_saya": "刀鞘",
   "item.tinkersslashblade.part.named": "%s（%s）",
+  "pattern.tinkersslashblade.tsb_part_blade": "刀刃图案",
+  "pattern.tinkersslashblade.tsb_part_handle": "刀柄图案",
+  "pattern.tinkersslashblade.tsb_part_saya": "刀鞘图案",
   "tsb.part.blade.desc": "决定刀的耐久、攻击与刀性，需要 2 锭同材料",
   "tsb.part.handle.desc": "决定耐久加成，1 锭同材料",
   "tsb.part.saya.desc": "决定攻击修正，1 锭同材料",
@@ -115,5 +118,10 @@
   "tsb.tooltip.refine.desc": "工匠砧用强化卷轴可免费提升，不吃强化槽位",
   "tsb.anvil_repair.no_material": "这把刀没有可修复的材料记录",
   "tsb.anvil_repair.no_ingot": "需要对应材料的锭",
-  "tsb.anvil_repair.already_full": "刀的耐久已满，无需修理"
+  "tsb.anvil_repair.already_full": "刀的耐久已满，无需修理",
+  "tsb.tooltip.slots.upgrade": "升级槽：%s / %s",
+  "tsb.tooltip.slots.ability": "能力槽：%s / %s",
+  "tsb.tooltip.modifiers": "改造：",
+  "tsb.part_swap.invalid": "需要把要替换的部件放进红石粉或铁锭槽（一次一件）",
+  "tsb.part_swap.same_material": "该槽已经是这种材料，无需替换"
 }

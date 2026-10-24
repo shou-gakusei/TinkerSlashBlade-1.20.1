@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+  "cast": {
+    "item": "tinkersslashblade:tsb_part_blade_cast"
+  },
+  "fluid": {
+    "fluid": "tconstruct:molten_cinderslime",
+    "amount": 180
+  },
+  "cooling_time": 60,
+  "result": {
+    "item": "tinkersslashblade:tsb_part_blade",
+    "nbt": {
+      "material": "tconstruct:cinderslime"
+    }
+  }
+}

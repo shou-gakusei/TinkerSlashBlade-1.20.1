@@ -36,5 +36,9 @@ public final class TsbRecipes {
     public static final RegistryObject<RecipeSerializer<TsbAnvilRepairRecipe>> ANVIL_REPAIR =
             SERIALIZERS.register("tsb_anvil_repair", () -> TsbAnvilRepairRecipe.Serializer.INSTANCE);
 
+    /** 工匠砧部件替换：刀 + 替换部件 → 换掉主/副对应部件（JSON: {@code {"type":"tinkersslashblade:tsb_part_swap"}}）。 */
+    public static final RegistryObject<RecipeSerializer<TsbPartSwapRecipe>> PART_SWAP =
+            SERIALIZERS.register("tsb_part_swap", () -> TsbPartSwapRecipe.Serializer.INSTANCE);
+
     private TsbRecipes() {}
 }

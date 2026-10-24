@@ -86,6 +86,9 @@
   "item.tinkersslashblade.tsb_part_handle": "Handle Part",
   "item.tinkersslashblade.tsb_part_saya": "Saya Part",
   "item.tinkersslashblade.part.named": "%s (%s)",
+  "pattern.tinkersslashblade.tsb_part_blade": "Blade Pattern",
+  "pattern.tinkersslashblade.tsb_part_handle": "Handle Pattern",
+  "pattern.tinkersslashblade.tsb_part_saya": "Sheath Pattern",
   "tsb.part.blade.desc": "Sets durability, attack and trait. Needs 2 ingots",
   "tsb.part.handle.desc": "Sets the durability bonus. Needs 1 ingot",
   "tsb.part.saya.desc": "Sets the attack modifier. Needs 1 ingot",
@@ -115,5 +118,10 @@
   "tsb.tooltip.refine.desc": "Use a reinforce scroll in the anvil to raise it for free, no modifier slots used",
   "tsb.anvil_repair.no_material": "This blade has no repairable material recorded",
   "tsb.anvil_repair.no_ingot": "Requires an ingot of the matching material",
-  "tsb.anvil_repair.already_full": "The blade is already at full durability"
+  "tsb.anvil_repair.already_full": "The blade is already at full durability",
+  "tsb.tooltip.slots.upgrade": "Upgrade slots: %s / %s",
+  "tsb.tooltip.slots.ability": "Ability slots: %s / %s",
+  "tsb.tooltip.modifiers": "Modifiers:",
+  "tsb.part_swap.invalid": "Put the replacement part into the redstone or iron slot (one at a time)",
+  "tsb.part_swap.same_material": "That slot already uses this material"
 }

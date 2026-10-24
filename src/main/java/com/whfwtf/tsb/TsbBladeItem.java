@@ -10,11 +10,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.tools.SlotType;
+import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
@@ -40,6 +46,7 @@ import java.util.UUID;
 public class TsbBladeItem extends ItemSlashBlade {
 
     private static final UUID TSB_SPEED_UUID = UUID.fromString("6f0a2c1e-9b7d-4f2a-8f3e-1c5d7a9b0e21");
+    private static final UUID TSB_ATTACK_UUID = UUID.fromString("8c2f6b40-2d31-4b6e-9a57-3e8d1f0c4a72");
 
     /** RankAttackDamage 三档门槛（照 1.12.2 老版 TSB 的阶级观）：SS / SSS / Limit。 */
     private static final float RANK_SS = 5.0F;
@@ -65,20 +72,26 @@ public class TsbBladeItem extends ItemSlashBlade {
 
     /** 刀的挖掘速度；旧刀没有该 NBT 时按主刃材料兜底。 */
     public static float miningSpeedOf(ItemStack stack) {
+        float base;
         if (hasStat(stack, TsbItems.TAG_MINING_SPEED)) {
-            return stack.getTag().getFloat(TsbItems.TAG_MINING_SPEED);
+            base = stack.getTag().getFloat(TsbItems.TAG_MINING_SPEED);
+        } else {
+            TsbMaterial.Entry entry = TsbMaterials.resolve(TsbItems.materialOf(stack));
+            base = entry == null ? 0.0F : entry.miningSpeed();
         }
-        TsbMaterial.Entry entry = TsbMaterials.resolve(TsbItems.materialOf(stack));
-        return entry == null ? 0.0F : entry.miningSpeed();
+        return base + TsbModifierBridge.miningSpeedBonus(stack);
     }
 
     /** 刀的挖掘等级（数字）；旧刀没有该 NBT 时按主刃材料兜底，认不出返回 -1（不能挖）。 */
     public static int miningTierOf(ItemStack stack) {
+        int base;
         if (hasStat(stack, TsbItems.TAG_MINING_TIER)) {
-            return stack.getTag().getInt(TsbItems.TAG_MINING_TIER);
+            base = stack.getTag().getInt(TsbItems.TAG_MINING_TIER);
+        } else {
+            TsbMaterial.Entry entry = TsbMaterials.resolve(TsbItems.materialOf(stack));
+            base = entry == null ? -1 : entry.miningTier();
         }
-        TsbMaterial.Entry entry = TsbMaterials.resolve(TsbItems.materialOf(stack));
-        return entry == null ? -1 : entry.miningTier();
+        return Math.max(base, TsbModifierBridge.harvestTier(stack));
     }
 
     /** 刀的攻击速度倍率（刀柄攻速系数之和，1.0 = 不修正）。 */
@@ -92,7 +105,15 @@ public class TsbBladeItem extends ItemSlashBlade {
 
     /** 这把刀最终的攻击速度（基础 1.6 × 刀柄系数 + 特性攻速加成）。 */
     public static float attackSpeedOf(ItemStack stack) {
-        return TsbAssembly.BASE_ATTACK_SPEED * speedFactorOf(stack) + TsbTrait.attackSpeedBonus(stack);
+        return TsbAssembly.BASE_ATTACK_SPEED * speedFactorOf(stack)
+                + TsbTrait.attackSpeedBonus(stack)
+                + TsbModifierBridge.attackSpeedBonus(stack);
+    }
+
+    /** 耐久上限：BladeState 记录的材料耐久 + 改造提供的耐久加成。 */
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return (int) Math.max(1, super.getMaxDamage(stack) + TsbModifierBridge.durabilityBonus(stack));
     }
 
     private static boolean hasStat(ItemStack stack, String key) {
@@ -105,7 +126,33 @@ public class TsbBladeItem extends ItemSlashBlade {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         boolean result = super.hurtEnemy(stack, target, attacker);
         TsbTrait.onHit(stack, TsbItems.variantOf(stack), target, attacker, attackDamageOf(attacker));
+        if (result && TsbModifierBridge.supports(stack)) {
+            float base = attackDamageOf(attacker);
+            Player player = attacker instanceof Player p ? p : null;
+            ToolAttackContext context = new ToolAttackContext(attacker, player, InteractionHand.MAIN_HAND,
+                    EquipmentSlot.MAINHAND, target, target, player != null, 1.0F, false);
+            float conditional = TsbModifierBridge.conditionalAttack(stack, target, base);
+            float extra = TsbModifierBridge.modifyMeleeDamage(stack, context, conditional) - base;
+            DamageSource source = player != null
+                    ? player.damageSources().playerAttack(player)
+                    : attacker.damageSources().mobAttack(attacker);
+            if (extra > 0.0F) {
+                target.hurt(source, extra);
+            }
+            TsbModifierBridge.afterMeleeHit(stack, context, conditional);
+            TsbModifierBridge.onDamageDealt(stack, attacker, target, source, conditional, false);
+        }
         return result;
+    }
+
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity,
+                                                  java.util.function.Consumer<T> onBroken) {
+        if (TsbModifierBridge.hasModifier(stack, "tconstruct:unbreakable")) {
+            return 0;
+        }
+        return super.damageItem(stack, TsbModifierBridge.modifyDurabilityLoss(stack, amount, entity),
+                entity, onBroken);
     }
 
     private static float attackDamageOf(LivingEntity attacker) {
@@ -116,17 +163,24 @@ public class TsbBladeItem extends ItemSlashBlade {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> result = super.getAttributeModifiers(slot, stack);
         if (slot == EquipmentSlot.MAINHAND) {
-            // 目标攻速 = 1.6 × 刀柄系数 + 特性加成；与现有修正的差值用自己的 UUID 补上
+            // 目标攻速 = 1.6 × 刀柄系数 + 特性/改造加成；与现有修正的差值用自己的 UUID 补上
             float target = attackSpeedOf(stack);
             float current = 4.0F;
             for (AttributeModifier modifier : result.get(Attributes.ATTACK_SPEED)) {
                 current += modifier.getAmount();
             }
             float delta = target - current;
-            if (delta != 0.0F) {
+            float attack = TsbModifierBridge.attackBonus(stack);
+            if (delta != 0.0F || attack != 0.0F) {
                 Multimap<Attribute, AttributeModifier> copy = ArrayListMultimap.create(result);
-                copy.put(Attributes.ATTACK_SPEED, new AttributeModifier(TSB_SPEED_UUID, "tsb_trait_speed",
-                        delta, AttributeModifier.Operation.ADDITION));
+                if (delta != 0.0F) {
+                    copy.put(Attributes.ATTACK_SPEED, new AttributeModifier(TSB_SPEED_UUID, "tsb_trait_speed",
+                            delta, AttributeModifier.Operation.ADDITION));
+                }
+                if (attack != 0.0F) {
+                    copy.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(TSB_ATTACK_UUID,
+                            "tsb_modifier_attack", attack, AttributeModifier.Operation.ADDITION));
+                }
                 return copy;
             }
         }
@@ -174,6 +228,11 @@ public class TsbBladeItem extends ItemSlashBlade {
     public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity,
                               int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
+        TsbModifierBridge.ensureSlots(stack);
+        TsbAssembly.ensureOdachiParts(stack);
+        if (TsbModifierBridge.supports(stack)) {
+            TsbModifierBridge.inventoryTick(stack, level, entity, slot, selected);
+        }
         // 注意：这里不再应用韧性（DUCTILE）的被动自我修复。
         // 原逻辑会每 ~240 tick 把耐久 +1，与战斗损耗叠加导致「砍怪耐久先降后涨」的波动，
         // 与玩家预期（耐久只减、靠工匠砧/工作台修复）冲突，视为 BUG-4 修复。
@@ -259,7 +318,7 @@ public class TsbBladeItem extends ItemSlashBlade {
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             // 显示「剩余 / 上限」而不是 BladeState 的已损值，见 remainingDurability 的注释
             tooltip.add(Component.translatable("tsb.tooltip.durability_value",
-                            remainingDurability(stack), state.getMaxDamage())
+                            remainingDurability(stack), stack.getMaxDamage())
                     .withStyle(ChatFormatting.GRAY));
             if (state.getSlashArtsKey() != null && !TsbArts.NONE.equals(state.getSlashArtsKey())) {
                 tooltip.add(Component.translatable("tsb.tooltip.arts",
@@ -304,6 +363,26 @@ public class TsbBladeItem extends ItemSlashBlade {
         if (hasParts(stack)) {
             tooltip.add(Component.translatable("tsb.tooltip.ctrl_hint").withStyle(ChatFormatting.DARK_GRAY));
         }
+
+        if (TsbModifierBridge.supports(stack)) {
+            TsbModifierBridge.ensureSlots(stack);
+            int upgrades = TsbModifierBridge.freeSlots(stack, SlotType.UPGRADE);
+            int abilities = TsbModifierBridge.freeSlots(stack, SlotType.ABILITY);
+            tooltip.add(Component.translatable("tsb.tooltip.slots.upgrade", upgrades, 2)
+                    .withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("tsb.tooltip.slots.ability", abilities, 2)
+                    .withStyle(ChatFormatting.GRAY));
+            List<ModifierEntry> modifiers = TsbModifierBridge.activeModifiers(stack);
+            if (!modifiers.isEmpty()) {
+                tooltip.add(Component.translatable("tsb.tooltip.modifiers")
+                        .withStyle(ChatFormatting.YELLOW));
+                for (ModifierEntry mod : modifiers) {
+                    tooltip.add(Component.literal(" • ").withStyle(ChatFormatting.DARK_GRAY)
+                            .append(mod.getDisplayName()));
+                }
+            }
+            TsbModifierBridge.addTooltip(stack, PlayerHolder.player(), tooltip, flag);
+        }
     }
 
     /** Shift 视图：耐久 / 近战伤害 / 近战速度 / 挖掘等级 / 挖掘速度。 */
@@ -311,7 +390,7 @@ public class TsbBladeItem extends ItemSlashBlade {
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
             // 与默认视图同一口径：剩余 / 上限
             tooltip.add(Component.translatable("tsb.tooltip.durability_value",
-                            remainingDurability(stack), state.getMaxDamage())
+                            remainingDurability(stack), stack.getMaxDamage())
                     .withStyle(ChatFormatting.GRAY));
         });
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> tooltip.add(

@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+  "cast": {
+    "item": "tinkersslashblade:tsb_part_handle_cast"
+  },
+  "fluid": {
+    "tag": "tconstruct:molten_queens_slime",
+    "amount": 90
+  },
+  "cooling_time": 40,
+  "result": {
+    "item": "tinkersslashblade:tsb_part_handle",
+    "nbt": {
+      "material": "tconstruct:queens_slime"
+    }
+  }
+}

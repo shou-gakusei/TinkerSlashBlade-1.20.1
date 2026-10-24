@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:casting_table",
+  "cast": {
+    "item": "tinkersslashblade:tsb_part_saya_cast"
+  },
+  "fluid": {
+    "tag": "forge:molten_iron",
+    "amount": 90
+  },
+  "cooling_time": 40,
+  "result": {
+    "item": "tinkersslashblade:tsb_part_saya",
+    "nbt": {
+      "material": "tconstruct:iron"
+    }
+  }
+}

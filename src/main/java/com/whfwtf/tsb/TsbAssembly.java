@@ -64,6 +64,9 @@ public final class TsbAssembly {
             }
         });
         out.setHoverName(named(variant, material));
+        if (variant == TsbBladeVariant.DAIKATANA || variant == TsbBladeVariant.ODACHI) {
+            TsbModifierBridge.ensureSlots(out);
+        }
         return out;
     }
 
@@ -276,7 +279,197 @@ public final class TsbAssembly {
             }
         });
         out.setHoverName(named(variant, bladeMat));
+        TsbModifierBridge.ensureSlots(out);
         return out;
+    }
+
+    // ------------------------------------------------------------------ 部件替换
+
+    /**
+     * 旧版锻造直出的大太刀只有刀身材料；首次读取时用刀身材料补齐刀柄 / 刀鞘记录。
+     */
+    public static void ensureOdachiParts(ItemStack stack) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof TsbBladeItem)) {
+            return;
+        }
+        if (TsbItems.variantOf(stack) != TsbBladeVariant.ODACHI) {
+            return;
+        }
+        var tag = stack.getOrCreateTag();
+        String material = tag.getString(TsbItems.TAG_MATERIAL);
+        if (material.isEmpty()) {
+            return;
+        }
+        if (!tag.contains(TsbItems.TAG_HANDLE)) {
+            tag.putString(TsbItems.TAG_HANDLE, material);
+        }
+        if (!tag.contains(TsbItems.TAG_SAYA)) {
+            tag.putString(TsbItems.TAG_SAYA, material);
+        }
+    }
+
+    /** 锻造直出的无上大快刀只有刀身材料；替换前用刀身材料补齐其余五槽记录。 */
+    private static void ensureDaikatanaParts(ItemStack stack) {
+        var tag = stack.getOrCreateTag();
+        String material = tag.getString(TsbItems.TAG_MATERIAL);
+        if (material.isEmpty()) {
+            return;
+        }
+        for (String key : new String[]{TsbItems.TAG_BLADE2, TsbItems.TAG_HANDLE, TsbItems.TAG_HANDLE2,
+                TsbItems.TAG_SAYA, TsbItems.TAG_SAYA2}) {
+            if (!tag.contains(key) || tag.getString(key).isEmpty()) {
+                tag.putString(key, material);
+            }
+        }
+    }
+
+    /**
+     * 工匠砧部件替换：槽位 1（红石粉）= 主/唯一，槽位 3（铁锭）= 副（仅无上大快刀）。
+     *
+     * @return 替换后的新刀；不合法/材料相同返回 null
+     */
+    @Nullable
+    public static ItemStack swapPart(ItemStack blade, int slotIndex, ItemStack part) {
+        if (blade.isEmpty() || !(part.getItem() instanceof TsbPartItem partItem)) {
+            return null;
+        }
+        TsbBladeVariant variant = TsbItems.variantOf(blade);
+        boolean secondary;
+        if (slotIndex == 1) {
+            secondary = false;
+        } else if (slotIndex == 3 && variant == TsbBladeVariant.DAIKATANA) {
+            secondary = true;
+        } else {
+            return null;
+        }
+
+        String material = TsbParts.materialOf(part);
+        if (material.isEmpty() || TsbMaterials.resolve(material) == null) {
+            return null;
+        }
+
+        String key = switch (partItem.partType()) {
+            case BLADE -> secondary ? TsbItems.TAG_BLADE2 : TsbItems.TAG_MATERIAL;
+            case HANDLE -> secondary ? TsbItems.TAG_HANDLE2 : TsbItems.TAG_HANDLE;
+            case SAYA -> secondary ? TsbItems.TAG_SAYA2 : TsbItems.TAG_SAYA;
+        };
+
+        ItemStack out = blade.copy();
+        out.setCount(1);
+        var tag = out.getOrCreateTag();
+        if (TsbMaterials.path(tag.getString(key)).equals(TsbMaterials.path(material))) {
+            return null;
+        }
+        tag.putString(key, material);
+
+        if (variant == TsbBladeVariant.DAIKATANA) {
+            ensureDaikatanaParts(out);
+            recomputeDaikatana(out);
+        } else {
+            ensureOdachiParts(out);
+            recomputeOdachi(out);
+        }
+        return out;
+    }
+
+    /** 按六槽材料重算无上大快刀（保留 Refine / 附魔 / 耀魂 / 改造）。 */
+    private static void recomputeDaikatana(ItemStack out) {
+        var tag = out.getOrCreateTag();
+        String bladeMat = tag.getString(TsbItems.TAG_MATERIAL);
+        String blade2Mat = tag.getString(TsbItems.TAG_BLADE2);
+        String handleMat = tag.getString(TsbItems.TAG_HANDLE);
+        String handle2Mat = tag.getString(TsbItems.TAG_HANDLE2);
+        String sayaMat = tag.getString(TsbItems.TAG_SAYA);
+        String saya2Mat = tag.getString(TsbItems.TAG_SAYA2);
+        TsbMaterial.Entry blade = TsbMaterials.resolve(bladeMat);
+        TsbMaterial.Entry blade2 = TsbMaterials.resolve(blade2Mat);
+        TsbMaterial.Entry handle = TsbMaterials.resolve(handleMat);
+        TsbMaterial.Entry handle2 = TsbMaterials.resolve(handle2Mat);
+        TsbMaterial.Entry saya = TsbMaterials.resolve(sayaMat);
+        TsbMaterial.Entry saya2 = TsbMaterials.resolve(saya2Mat);
+        if (blade == null || blade2 == null || handle == null || handle2 == null
+                || saya == null || saya2 == null) {
+            return;
+        }
+        TsbBladeVariant variant = TsbBladeVariant.DAIKATANA;
+
+        float durabilityFactor = 1.0F + TsbMaterials.handleDurability(handleMat)
+                + TsbMaterials.handleDurability(handle2Mat);
+        float attackFactor = 1.0F + TsbMaterials.handleAttack(handleMat)
+                + TsbMaterials.handleAttack(handle2Mat);
+        float speedFactor = 1.0F + TsbMaterials.handleMeleeSpeed(handleMat)
+                + TsbMaterials.handleMeleeSpeed(handle2Mat);
+        float miningFactor = 1.0F + TsbMaterials.handleMiningSpeed(handleMat)
+                + TsbMaterials.handleMiningSpeed(handle2Mat);
+
+        float durabilitySum = blade.durability() + blade2.durability()
+                + saya.durability() + saya2.durability();
+        float attackSum = blade.attack() + blade2.attack() + saya.attack() + saya2.attack();
+        float miningSum = blade.miningSpeed() + blade2.miningSpeed()
+                + saya.miningSpeed() + saya2.miningSpeed();
+        int miningTier = Math.max(Math.max(blade.miningTier(), blade2.miningTier()),
+                Math.max(saya.miningTier(), saya2.miningTier()));
+
+        int durability = Math.max(2,
+                Math.round(durabilitySum * variant.durabilityFactor() * durabilityFactor));
+        float attack = Math.max(1.0F, attackSum * attackFactor + variant.attackOffset());
+        float miningSpeed = Math.max(0.0F, miningSum * miningFactor);
+
+        writeMaterialStats(out, variant, bladeMat, durability, attack, miningSpeed, miningTier, speedFactor);
+    }
+
+    /** 按三槽材料重算大太刀 / 打刀。 */
+    private static void recomputeOdachi(ItemStack out) {
+        var tag = out.getOrCreateTag();
+        String bladeMat = tag.getString(TsbItems.TAG_MATERIAL);
+        String handleMat = tag.getString(TsbItems.TAG_HANDLE);
+        String sayaMat = tag.getString(TsbItems.TAG_SAYA);
+        TsbMaterial.Entry blade = TsbMaterials.resolve(bladeMat);
+        TsbMaterial.Entry handle = TsbMaterials.resolve(handleMat);
+        TsbMaterial.Entry saya = TsbMaterials.resolve(sayaMat);
+        if (blade == null || handle == null || saya == null) {
+            return;
+        }
+        TsbBladeVariant variant = TsbItems.variantOf(out);
+
+        float durabilityFactor = 1.0F + TsbMaterials.handleDurability(handleMat);
+        float attackFactor = 1.0F + TsbMaterials.handleAttack(handleMat);
+        float speedFactor = 1.0F + TsbMaterials.handleMeleeSpeed(handleMat);
+        float miningFactor = 1.0F + TsbMaterials.handleMiningSpeed(handleMat);
+        float sayaBonus = saya.attack() * 0.2F;
+
+        int durability = Math.max(2,
+                Math.round(blade.durability() * variant.durabilityFactor() * durabilityFactor));
+        float attack = Math.max(1.0F,
+                blade.attack() * attackFactor + sayaBonus + variant.attackOffset());
+        float miningSpeed = Math.max(0.0F, blade.miningSpeed() * miningFactor);
+
+        writeMaterialStats(out, variant, bladeMat, durability, attack, miningSpeed,
+                blade.miningTier(), speedFactor);
+    }
+
+    /** 把材料数值写进现有刀（不重建 ItemStack，保留 BladeState 的 Refine / 附魔 / 耀魂等）。 */
+    private static void writeMaterialStats(ItemStack out, TsbBladeVariant variant, String bladeMat,
+                                           int durability, float attack, float miningSpeed,
+                                           int miningTier, float speedFactor) {
+        var tag = out.getOrCreateTag();
+        putStats(tag, miningSpeed, miningTier, speedFactor);
+        TsbMaterial.Entry blade = TsbMaterials.resolve(bladeMat);
+        out.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
+            state.setMaxDamage(durability);
+            state.setBaseAttackModifier(attack);
+            if (blade != null) {
+                state.setColorCode(blade.color());
+                state.setSlashArtsKey(TsbArts.forMaterial(blade));
+                var texture = bladeTexture(bladeMat);
+                if (texture != null) {
+                    state.setTexture(texture);
+                }
+            }
+        });
+        if (durability > 0) {
+            out.setDamageValue(Math.min(out.getDamageValue(), durability - 1));
+        }
     }
 
     // ------------------------------------------------------------------ 工具
